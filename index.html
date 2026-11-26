@@ -43,8 +43,8 @@
   /* Violet glow background */
   .glow-bg { position:fixed; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139,61,255,.25), transparent 60%), radial-gradient(ellipse 40% 30% at 80% 80%, rgba(112,88,212,.15), transparent 50%), var(--bg); }
   /* 3D Canvas */
-  #scene { position:fixed; inset:0; width:100%; height:100%; z-index:0; touch-action:pan-y; opacity:.45; }
-  @media (max-width:640px) { #scene { opacity:.25; } }
+  #scene { position:fixed; inset:0; width:100%; height:100%; z-index:0; touch-action:pan-y; opacity:.6; }
+  @media (max-width:640px) { #scene { opacity:.35; } }
   main, nav, footer { position:relative; z-index:2; }
   /* Nav */
   .nav { position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; padding:16px 5vw; backdrop-filter:blur(14px); background:rgba(6,7,15,.72); border-bottom:1px solid rgba(139,61,255,.14); z-index:50; }
@@ -83,14 +83,14 @@
   .coverflow::-webkit-scrollbar-thumb { background:rgba(139,61,255,.4); border-radius:4px; }
   .cover-card { flex:0 0 clamp(280px, 45vw, 380px); scroll-snap-align:center; perspective:1000px; }
   .cover-card-inner { width:100%; aspect-ratio:9/16; border-radius:20px; overflow:hidden; background:#000; transform-style:preserve-3d; transition:transform .4s cubic-bezier(.2,.6,.2,1), box-shadow .4s; border:1px solid var(--border); position:relative; }
-  .cover-card:hover .cover-card-inner { transform:rotateY(-8deg) rotateX(4deg) translateY(-12px) scale(1.02); box-shadow:0 32px 64px rgba(139,61,255,.25), 0 0 0 1px rgba(139,61,255,.4); }
+  .cover-card:hover .cover-card-inner { transform:rotateY(-8deg) rotateX(4deg) translateY(-10px) scale(1.03); box-shadow:0 32px 64px rgba(139,61,255,.25), 0 0 0 1px rgba(139,61,255,.4); }
   .cover-media { width:100%; height:100%; object-fit:cover; display:block; }
-  .cover-overlay { position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(6,7,15,.95)); opacity:0; transition:opacity .3s; display:flex; align-items:flex-end; padding:20px; }
-  .cover-card:hover .cover-overlay { opacity:1; }
+  .cover-overlay { position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(6,7,15,.95)); opacity:0; transition:opacity .3s, transform .3s; transform:translateZ(0); display:flex; align-items:flex-end; padding:20px; }
+  .cover-card:hover .cover-overlay { opacity:1; transform:translateZ(50px); }
   .cover-info h3 { font-size:1.1rem; font-weight:700; margin-bottom:4px; }
   .cover-info p { color:var(--muted); font-size:.9rem; }
-  .cover-play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(6,7,15,.35); color:var(--fg); text-decoration:none; font-weight:900; font-size:1rem; opacity:0; transition:opacity .3s; }
-  .cover-card:hover .cover-play { opacity:1; }
+  .cover-play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(6,7,15,.35); color:var(--fg); text-decoration:none; font-weight:900; font-size:1rem; opacity:0; transition:opacity .3s, transform .3s; transform:translateZ(0); }
+  .cover-card:hover .cover-play { opacity:1; transform:translateZ(70px); }
   .cover-play::before { content:"▶"; display:flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:50%; background:linear-gradient(115deg,var(--purple-deep),var(--purple)); box-shadow:0 8px 30px rgba(139,61,255,.45); }
   .cover-glare { position:absolute; inset:0; border-radius:20px; pointer-events:none; opacity:0; transition:opacity .3s; background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%), rgba(112,88,212,.16), transparent 45%); }
   .cover-card:hover .cover-glare { opacity:1; }
@@ -131,7 +131,7 @@
   .grain { position:fixed; inset:-60%; z-index:90; pointer-events:none; opacity:.045; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>'); animation:grain 7s steps(8) infinite; }
   @keyframes grain { 0%,100% { transform:translate(0,0); } 25% { transform:translate(-3%,2%); } 50% { transform:translate(2%,-3%); } 75% { transform:translate(-2%,-2%); } }
   /* 2-second intro */
-  #intro { position:fixed; inset:0; z-index:100; background:radial-gradient(ellipse 80% 60% at 50% 40%, #0c0b1e, #05060d 72%); display:flex; align-items:center; justify-content:center; transition:transform .55s cubic-bezier(.76,0,.24,1); }
+  #intro { position:fixed; inset:0; z-index:100; background:radial-gradient(ellipse 80% 60% at 50% 40%, rgba(12,11,30,.55), rgba(5,6,13,.7) 72%); display:flex; align-items:center; justify-content:center; transition:transform .55s cubic-bezier(.76,0,.24,1); }
   #intro.intro-done { transform:translateY(-101%); }
   #intro.intro-gone { display:none; }
   .intro-inner { text-align:center; }
@@ -404,7 +404,7 @@ function initScene() {
   scene.fog = new THREE.FogExp2(0x05060d, 0.04);
 
   const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
-  camera.position.set(0, 0, 24);
+  camera.position.set(0, 0, 46); // start deep for intro dive
 
   scene.add(new THREE.AmbientLight(0x8b3dff, 0.3));
   const key = new THREE.PointLight(0x7058d4, 60, 60);
@@ -430,9 +430,9 @@ function initScene() {
   );
   scene.add(particles);
 
-  // Hero group: orbiting rings + VEX text
+  // Hero group: orbiting rings + VEX text + wireframe cage + dust layers
   const heroGroup = new THREE.Group();
-  heroGroup.position.set(0, isMobile ? -1.6 : -0.6, isMobile ? -7 : -4); heroGroup.scale.setScalar(isMobile ? 0.3 : 0.55);
+  heroGroup.position.set(0, isMobile ? -2.2 : -1.2, isMobile ? -6 : -3); heroGroup.scale.setScalar(isMobile ? 0.42 : 0.8);
   scene.add(heroGroup);
 
   const ringGeo = new THREE.TorusGeometry(3.5, 0.08, 16, 100);
@@ -464,14 +464,70 @@ function initScene() {
       });
       geo.center();
       vexText = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color: 0x2b2924, metalness: 0.7, roughness: 0.25,
-        emissive: 0x8b3dff, emissiveIntensity: 0.2
+        color: 0x2b2924, metalness: 0.9, roughness: 0.18,
+        emissive: 0x8b3dff, emissiveIntensity: 0.3
       }));
-      vexText.position.set(0, 3.5, -1.5);
+      vexText.position.set(0, 0, 0);
       heroGroup.add(vexText);
+
+      // Wireframe TorusKnot cage around VEX text
+      const cageGeo = new THREE.TorusKnotGeometry(2.2, 0.5, 128, 16, 2, 3);
+      const cageMat = new THREE.MeshBasicMaterial({
+        color: 0x8b3dff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.2
+      });
+      const cage = new THREE.Mesh(cageGeo, cageMat);
+      cage.rotation.x = Math.PI / 2;
+      heroGroup.add(cage);
+      heroGroup.userData.cage = cage;
+
+      // Orbiting white sweep light for metallic highlights
+      const sweepLight = new THREE.PointLight(0xffffff, 80, 15);
+      sweepLight.position.set(8, 8, 8);
+      heroGroup.add(sweepLight);
+      heroGroup.userData.sweepLight = sweepLight;
     },
     undefined, () => {}
   );
+
+  // Two-layer dust: far (1600 small) + near (320 bigger/brighter)
+  const dustFarCount = isMobile ? 800 : 1600;
+  const dustFarPositions = new Float32Array(dustFarCount * 3);
+  for (let i = 0; i < dustFarCount; i++) {
+    const r = 12 + Math.random() * 20;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    dustFarPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    dustFarPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    dustFarPositions[i * 3 + 2] = r * Math.cos(phi);
+  }
+  const dustFarGeo = new THREE.BufferGeometry();
+  dustFarGeo.setAttribute("position", new THREE.BufferAttribute(dustFarPositions, 3));
+  const dustFar = new THREE.Points(
+    dustFarGeo,
+    new THREE.PointsMaterial({ color: 0x7058d4, size: 0.02, transparent: true, opacity: 0.3 })
+  );
+  scene.add(dustFar);
+
+  const dustNearCount = isMobile ? 160 : 320;
+  const dustNearPositions = new Float32Array(dustNearCount * 3);
+  for (let i = 0; i < dustNearCount; i++) {
+    const r = 3 + Math.random() * 8;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    dustNearPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    dustNearPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    dustNearPositions[i * 3 + 2] = r * Math.cos(phi);
+  }
+  const dustNearGeo = new THREE.BufferGeometry();
+  dustNearGeo.setAttribute("position", new THREE.BufferAttribute(dustNearPositions, 3));
+  const dustNear = new THREE.Points(
+    dustNearGeo,
+    new THREE.PointsMaterial({ color: 0x8b3dff, size: 0.05, transparent: true, opacity: 0.6 })
+  );
+  heroGroup.add(dustNear);
 
   // Orbiting purple orbs
   const orbGeo = new THREE.SphereGeometry(0.15, 16, 16);
@@ -485,23 +541,31 @@ function initScene() {
   }
 
   // Interaction
-  let dragging = false, lastX = 0, rotY = 0, rotVel = 0;
+  let dragging = false, lastX = 0, lastY = 0, rotY = 0, rotX = 0, rotVel = 0, rotXVel = 0;
   const pointer = { x: 0, y: 0 };
+  let scrollY = 0;
 
   window.addEventListener("pointermove", (e) => {
     pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
     if (dragging) {
       const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
       lastX = e.clientX;
+      lastY = e.clientY;
       rotVel = dx * 0.004;
+      rotXVel = -dy * 0.004;
       rotY += rotVel;
+      rotX += rotXVel;
+      rotX = Math.max(-0.5, Math.min(0.5, rotX)); // clamp vertical drag
     }
   }, { passive: true });
 
-  canvas.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; });
+  canvas.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
   window.addEventListener("pointerup", () => { dragging = false; });
   window.addEventListener("pointercancel", () => { dragging = false; });
+
+  window.addEventListener("scroll", () => { scrollY = window.scrollY; }, { passive: true });
 
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -514,27 +578,62 @@ function initScene() {
     requestAnimationFrame(animate);
     const t = clock.getElapsedTime();
 
-    // Camera subtle parallax
-    camera.position.x += (pointer.x * 0.5 - camera.position.x) * 0.03;
-    camera.position.y += (-pointer.y * 0.3 - camera.position.y) * 0.03;
-    camera.position.z += (9 - camera.position.z) * 0.045;
+    // Intro progress: 0→1 during 2s intro, then stays 1
+    const introP = window.__introP ?? 0;
+
+    // easeOutCubic: 1 - (1 - p)^3
+    const introPEase = 1 - Math.pow(1 - introP, 3);
+
+    // Scroll-driven camera: z = 9 + scrollY*0.004, y = -scrollY*0.0025
+    const scrollZ = 9 + scrollY * 0.004;
+    const scrollYPos = -scrollY * 0.0025;
+    const scrollYaw = scrollY * 0.0006;
+
+    // Camera: intro dive from z=46 to z=9 with easeOutCubic, then scroll-driven + pointer parallax
+    const targetZ = 46 - introPEase * 37; // 46 at introP=0, 9 at introP=1
+    const camTargetZ = introP < 1 ? targetZ : scrollZ;
+    const camTargetY = introP < 1 ? 0 : scrollYPos;
+    camera.position.x += (pointer.x * 0.9 - camera.position.x) * 0.03;
+    camera.position.y += (camTargetY - pointer.y * 0.5 - camera.position.y) * 0.03;
+    camera.position.z += (camTargetZ - camera.position.z) * 0.045;
     camera.lookAt(0, 0, 0);
 
-    // Rings animation
+    // Rings: 4x speed during intro, easing to 1x
+    const ringSpeedMult = 4 - 3 * introPEase; // 4x at introP=0, 1x at introP=1
     rings.forEach((r, i) => {
-      r.rotation.y += r.userData.speed;
+      r.rotation.y += r.userData.speed * ringSpeedMult;
       r.rotation.z = r.userData.tilt + Math.sin(t * 0.5 + r.userData.phase) * 0.15;
     });
 
-    // VEX text
-    if (vexText) {
-      vexText.rotation.y = Math.sin(t * 0.3) * 0.15 + rotY * 0.3;
-      vexText.position.y = 3.5 + Math.sin(t * 0.6) * 0.1;
+    // TorusKnot cage: slow idle rotation + emissive pulse
+    if (heroGroup.userData.cage) {
+      heroGroup.userData.cage.rotation.y += 0.002;
+      heroGroup.userData.cage.rotation.x += 0.001;
     }
 
-    // Orbs
+    // Sweep light orbiting for moving metallic highlights
+    if (heroGroup.userData.sweepLight) {
+      const r = 10;
+      heroGroup.userData.sweepLight.position.set(
+        Math.cos(t * 0.4) * r,
+        Math.sin(t * 0.3) * 4 + 4,
+        Math.sin(t * 0.4) * r
+      );
+    }
+
+    // VEX text: emissive pulse + pointer parallax + drag + scroll yaw
+    if (vexText) {
+      const pulse = 0.3 + Math.sin(t * 2) * 0.12; // 0.3±0.12
+      vexText.material.emissiveIntensity = pulse;
+      vexText.rotation.y = Math.sin(t * 0.3) * 0.15 + rotY * 0.3 + scrollYaw;
+      vexText.rotation.x = rotX * 0.3;
+      vexText.position.y = Math.sin(t * 0.6) * 0.15;
+    }
+
+    // Orbs: 4x speed during intro, easing to 1x
+    const orbSpeedMult = 4 - 3 * introPEase; // 4x at introP=0, 1x at introP=1
     orbs.forEach((o, i) => {
-      o.userData.angle += o.userData.speed;
+      o.userData.angle += o.userData.speed * orbSpeedMult;
       o.position.set(
         Math.cos(o.userData.angle) * o.userData.radius,
         o.userData.yOffset + Math.sin(t * 0.7 + i) * 0.5,
@@ -542,11 +641,19 @@ function initScene() {
       );
     });
 
+    // Dust layers: far drifts one way, near drifts opposite
+    dustFar.rotation.y = t * -0.0015;
+    dustNear.rotation.y = t * 0.003;
+    // Scroll parallax for dust
+    dustFar.position.y = scrollY * 0.004;
+    dustNear.position.y = scrollY * 0.009;
+
     particles.rotation.y = t * 0.008;
 
     // Drag inertia
-    if (!dragging) { rotVel *= 0.95; rotY += rotVel; }
+    if (!dragging) { rotVel *= 0.95; rotXVel *= 0.95; rotY += rotVel; rotX += rotXVel; }
     heroGroup.rotation.y += (rotY - heroGroup.rotation.y) * 0.08;
+    heroGroup.rotation.x += (rotX - heroGroup.rotation.x) * 0.08;
 
     renderer.render(scene, camera);
   }
@@ -721,7 +828,7 @@ function buildCoverflowCard(w, index) {
       const py = (e.clientY - rect.top) / rect.height;
       inner.style.setProperty("--gx", px * 100 + "%");
       inner.style.setProperty("--gy", py * 100 + "%");
-      inner.style.transform = `perspective(1000px) rotateY(${(px - 0.5) * -12}deg) rotateX(${(py - 0.5) * 10}deg) translateY(-8px) scale(1.02)`;
+      inner.style.transform = `perspective(1000px) rotateY(${(px - 0.5) * -20}deg) rotateX(${(py - 0.5) * 16}deg) translateY(-10px) scale(1.03)`;
     });
     inner.addEventListener("mouseleave", () => {
       inner.style.transform = "";
@@ -777,7 +884,7 @@ function initScrollAnimations() {
 
   document.querySelectorAll(".stat-card, .about-card, .works-header, .stats, .about").forEach(el => {
     el.style.opacity = "0";
-    el.style.transform = "translateY(30px)";
+    el.style.transform = "perspective(900px) rotateX(6deg) translateY(36px)";
     el.style.transition = "opacity 0.7s ease-out, transform 0.7s ease-out";
     observer.observe(el);
   });
@@ -808,16 +915,18 @@ function initHeroEntrance() {
 // ================= 2s Intro Controller =================
 function runIntro(onDone) {
   const intro = document.getElementById("intro");
-  if (!intro || reducedMotion) { if (intro) intro.remove(); onDone(); return; }
+  if (!intro || reducedMotion) { if (intro) intro.remove(); onDone(); window.__introP = 1; return; }
   const fill = document.getElementById("intro-fill");
   const count = document.getElementById("intro-count");
   const EXIT_AT = 1450; // exit wipe 1450ms + 550ms transition = gone at 2000ms exactly
   const t0 = performance.now();
   let finished = false;
+  window.__introP = 0;
   function finish() {
     if (finished) return; finished = true;
     clearTimeout(window.__vexIntroTimer);
     intro.classList.add("intro-done");
+    window.__introP = 1;
     onDone();
     setTimeout(() => intro.classList.add("intro-gone"), 650);
   }
@@ -828,6 +937,7 @@ function runIntro(onDone) {
     const eased = 1 - Math.pow(1 - p, 2);
     if (fill) fill.style.width = (eased * 100).toFixed(1) + "%";
     if (count) count.textContent = Math.round(eased * 100) + "%";
+    window.__introP = eased; // shared progress for WebGL
     if (now - t0 >= EXIT_AT) { finish(); return; }
     requestAnimationFrame(tick);
   }
