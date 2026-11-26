@@ -313,7 +313,7 @@ function fillRow(id, vids) {
   [...vids, ...vids].forEach(src => {
     const d = document.createElement("div");
     d.className = "mcard";
-    d.innerHTML = `<video src="${src}" muted loop playsinline preload="auto"></video>`;
+    d.innerHTML = `<video src="${src}" poster="posters/${src.replace('.mp4','.jpg')}" muted loop playsinline preload="auto"></video>`;
     const v = d.querySelector("video");
     d.addEventListener("pointerenter", e => {
       if (e.pointerType !== "mouse") return;
