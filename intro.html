@@ -33,15 +33,16 @@
   }
   .scene-title small { display:block; font-size:clamp(.75rem,1.5vw,1rem); color:var(--muted); font-weight:400; margin-top:12px; letter-spacing:.04em; }
 
-  /* Scene A: container-scroll video reveal */
-  #sceneA { height:260vh; }
-  #cardA {
-    width:min(820px,84vw); aspect-ratio:16/9; border-radius:22px; overflow:hidden;
-    border:1px solid var(--border); box-shadow:0 40px 120px rgba(139,61,255,.35);
-    transform-origin:center 60%; will-change:transform; background:#0B0D1A;
+  /* Scene A: full-viewport intro video, edge to edge */
+  #sceneA { height:170vh; }
+  #videoWrapA {
+    position:relative; width:100vw; aspect-ratio:16/9; overflow:hidden; background:#06070F;
   }
-  #cardA video { width:100%; height:100%; object-fit:cover; display:block; }
-  #cardA { position:relative; }
+  #videoWrapA video { width:100%; height:100%; object-fit:cover; display:block; }
+  @media (max-width:767px) {
+    #videoWrapA { aspect-ratio:auto; height:100svh; }
+  }
+  #titleA { text-shadow:0 4px 30px rgba(6,7,15,.85), 0 1px 8px rgba(6,7,15,.6); }
   #soundA {
     position:absolute; bottom:14px; inset-inline-end:14px; z-index:4;
     padding:8px 14px; border-radius:999px; border:1px solid var(--border);
@@ -111,8 +112,8 @@
 <!-- A: container-scroll video reveal -->
 <section class="scene" id="sceneA" data-bg="#06070F">
   <div class="stage">
-    <h1 class="scene-title" id="titleA">الشغل اللي بيتشاف<small>انزل تحت — الكارت بيفتح معاك</small></h1>
-    <div id="cardA">
+    <h1 class="scene-title" id="titleA">الشغل اللي بيتشاف<small>انزل تحت — الجولة بتبدأ</small></h1>
+    <div id="videoWrapA">
       <video id="videoA" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted loop playsinline autoplay></video>
       <button id="soundA" type="button" aria-label="تشغيل الصوت">🔇 شغّل الصوت</button>
     </div>
@@ -166,7 +167,7 @@ function progressOf(el) {
 }
 const clamp01 = v => Math.min(1, Math.max(0, v));
 
-const titleA = document.getElementById("titleA"), cardA = document.getElementById("cardA");
+const titleA = document.getElementById("titleA");
 const videoA = document.getElementById("videoA"), soundA = document.getElementById("soundA");
 soundA.addEventListener("click", () => {
   videoA.muted = !videoA.muted;
@@ -202,10 +203,8 @@ let ticking = false;
 function update() {
   ticking = false;
 
-  // A: card rotates flat + scales up, title lifts away
+  // A: title lifts away over the full-screen intro video
   const pA = progressOf(sceneA);
-  const rotA = 22 * (1 - pA), scA = (isMobile ? 0.72 : 0.78) + pA * 0.27;
-  cardA.style.transform = `rotateX(${rotA}deg) scale(${scA})`;
   titleA.style.transform = `translateY(${-110 * pA}px)`;
   titleA.style.opacity = 1 - pA * 1.15;
 
