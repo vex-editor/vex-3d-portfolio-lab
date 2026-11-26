@@ -581,12 +581,15 @@ function buildCoverflowCard(w, index) {
 
   let mediaEl;
   if (drive || yt) {
-    mediaEl = document.createElement("iframe");
-    mediaEl.src = drive || yt;
-    mediaEl.loading = "lazy";
-    mediaEl.allow = "autoplay; fullscreen";
-    mediaEl.allowFullscreen = true;
-    mediaEl.title = w.title;
+    if (w.cover) {
+      mediaEl = document.createElement("img");
+      mediaEl.src = toDriveImage(w.cover);
+      mediaEl.alt = w.title;
+      mediaEl.loading = "lazy";
+    } else {
+      mediaEl = document.createElement("div");
+      mediaEl.style.cssText = "width:100%;height:100%;background:linear-gradient(160deg,#151233,#0a0c1a);";
+    }
   } else if (isMp4) {
     mediaEl = document.createElement("video");
     mediaEl.src = w.video;
@@ -632,6 +635,19 @@ function buildCoverflowCard(w, index) {
     playLink.target = "_blank";
     playLink.rel = "noopener";
     playLink.setAttribute("aria-label", "شغّل " + w.title);
+    if (drive || yt) {
+      playLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        const f = document.createElement("iframe");
+        f.src = drive || yt;
+        f.className = "cover-media";
+        f.allow = "autoplay; fullscreen";
+        f.allowFullscreen = true;
+        f.title = w.title;
+        inner.replaceChild(f, mediaEl);
+        playLink.remove();
+      });
+    }
     inner.appendChild(playLink);
   }
 
