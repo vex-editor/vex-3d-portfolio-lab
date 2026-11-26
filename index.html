@@ -34,8 +34,9 @@
   }
 }
 </script>
+<link rel="stylesheet" href="niches.css?v=vx1">
 <style>
-  :root { --bg:#05060d; --fg:#f3f2fa; --muted:#a8a7bb; --purple:#8B3DFF; --purple-deep:#6028bb; --purple-bright:#b99aff; --card:rgba(10,12,26,.96); --border:rgba(139,61,255,.28); }
+  :root { --bg:#05060d; --fg:#f3f2fa; --text:#f3f2fa; --line:rgba(139,61,255,.28); --panel:rgba(14,16,32,.9); --panel2:#0b0913; --muted:#a8a7bb; --purple:#8B3DFF; --purple-deep:#6028bb; --purple-bright:#b99aff; --card:rgba(10,12,26,.96); --border:rgba(139,61,255,.28); }
   * { box-sizing:border-box; margin:0; padding:0; }
   html { scroll-behavior:smooth; }
   @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
@@ -43,7 +44,8 @@
   /* Violet glow background */
   .glow-bg { position:fixed; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139,61,255,.25), transparent 60%), radial-gradient(ellipse 40% 30% at 80% 80%, rgba(112,88,212,.15), transparent 50%), var(--bg); }
   /* 3D Canvas */
-  #scene { position:fixed; inset:0; width:100%; height:100%; z-index:0; touch-action:pan-y; opacity:.6; }
+  #scene { position:fixed; inset:0; width:100%; height:100%; z-index:0; touch-action:pan-y; opacity:.5; }
+  #persona { position:fixed; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
   @media (max-width:640px) { #scene { opacity:.35; } }
   main, nav, footer { position:relative; z-index:2; }
   /* Nav */
@@ -65,9 +67,6 @@
   .grad { background:linear-gradient(115deg,#ffffff 10%,#e6dcff 40%,#b99aff 75%,#8b3dff); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero-sub { color:var(--muted); font-size:clamp(1rem, 2.4vw, 1.3rem); max-width:560px; margin:22px auto 34px; text-shadow:0 2px 14px rgba(6,7,15,.9); }
   .hero-actions { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
-  .scroll-hint { margin-top:48px; color:var(--muted); font-size:.85rem; opacity:.7; animation:float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
-  @media (prefers-reduced-motion:reduce) { .scroll-hint { animation:none; } }
   /* Value strip */
   .value-strip { padding:40px 6vw; text-align:center; border-top:1px solid rgba(139,61,255,.1); border-bottom:1px solid rgba(139,61,255,.1); }
   .value-strip p { color:var(--muted); font-size:clamp(1rem, 2.2vw, 1.2rem); font-weight:500; }
@@ -95,6 +94,10 @@
   .cover-glare { position:absolute; inset:0; border-radius:20px; pointer-events:none; opacity:0; transition:opacity .3s; background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%), rgba(112,88,212,.16), transparent 45%); }
   .cover-card:hover .cover-glare { opacity:1; }
   .works-empty { grid-column:1/-1; color:var(--muted); text-align:center; padding:40px; }
+  /* Playlists: folder cards from niches.css */
+  .niches { padding:100px 6vw; }
+  .niches .niche-grid { max-width:1100px; margin:0 auto; }
+  .niches .niche-card { font-family:inherit; }
   /* Stats strip */
   .stats { padding:80px 6vw; background:linear-gradient(180deg, transparent, rgba(139,61,255,.03), transparent); border-top:1px solid rgba(139,61,255,.1); border-bottom:1px solid rgba(139,61,255,.1); }
   .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:24px; max-width:1100px; margin:0 auto; }
@@ -193,6 +196,7 @@
 <div class="scroll-progress" aria-hidden="true"><div id="scroll-progress-fill"></div></div>
 <div class="glow-bg" aria-hidden="true"></div>
 <canvas id="scene" aria-hidden="true"></canvas>
+<canvas id="persona" aria-hidden="true"></canvas>
 <nav class="nav" role="navigation" aria-label="Main navigation">
   <a href="index.html" class="nav-logo" aria-label="VEX Home">VEX<span>.</span></a>
   <div class="nav-links">
@@ -211,7 +215,6 @@
       <a href="https://wa.me/201558077266?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B+VEX+%F0%9F%91%8B+%D8%B9%D8%A7%D9%8A%D8%B2+%D8%A3%D8%B7%D9%84%D8%A8+%D8%B1%D9%8A%D9%84+%D9%84%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9+%D8%A8%D8%B5%D8%B1%D9%8A%D8%A9+%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9" class="btn btn-primary btn-big" id="hero-cta" target="_blank" rel="noopener">ابدأ مشروعك</a>
       <a href="#works" class="btn btn-ghost" id="hero-works-cta">شوف الأعمال</a>
     </div>
-    <p class="scroll-hint" aria-hidden="true">اسحب لاكتشاف المزيد ↓</p>
   </section>
   <div class="marquee" aria-hidden="true">
     <div class="marquee-track" id="marquee-track"></div>
@@ -219,11 +222,17 @@
   <section class="works" id="works" aria-labelledby="works-title">
     <div class="works-header">
       <h2 id="works-title">أعمالي<span class="dot">.</span></h2>
-      <a href="niche.html" class="btn btn-ghost">كل البلاي ليستات →</a>
+      <a href="#niches" class="btn btn-ghost">كل البلاي ليستات ↓</a>
     </div>
     <div class="coverflow" id="work-coverflow" role="list" aria-label="Featured works">
       <p class="works-empty" id="works-loading">جاري تحميل الأعمال…</p>
     </div>
+  </section>
+  <section class="niches" id="niches" aria-labelledby="niches-title">
+    <div class="works-header">
+      <h2 id="niches-title">البلاي ليستات<span class="dot">.</span></h2>
+    </div>
+    <div class="niche-grid" id="niche-grid"></div>
   </section>
   <section class="stats" id="stats" aria-labelledby="stats-title">
     <h2 id="stats-title" class="sr-only">إحصائيات</h2>
@@ -291,11 +300,10 @@
     </div>
   </div>
 </footer>
+<script src="vex-player.js?v=1"></script>
+<script src="niches.js?v=vx1"></script>
 <script type="module">
 import * as THREE from "three";
-import { FontLoader } from "three/addons/loaders/FontLoader.js";
-import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 // ================= Config =================
 const SUPA_URL = "https://aoabbtazodqpkkriitfj.supabase.co";
@@ -389,17 +397,18 @@ function updateDynamicText() {
   const heroTitle = document.getElementById("hero-title");
   const heroSub = document.querySelector(".hero-sub");
   const worksTitle = document.getElementById("works-title");
+  const nichesTitle = document.getElementById("niches-title");
   const aboutTitle = document.getElementById("about-title");
   if (currentLang === "en") {
     if (heroTitle) heroTitle.innerHTML = headlineMarkup();
     if (heroSub) heroSub.textContent = "Not just video — it's an experience. Every cut, every transition, every color — calculated to serve the message.";
     if (worksTitle) worksTitle.innerHTML = 'My <span class="dot">.</span>Work';
+    if (nichesTitle) nichesTitle.innerHTML = 'Playlists<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'About <span class="dot">VEX</span>';
     document.querySelector(".hero-kicker .kicker-text").textContent = "Your Editing";
-    document.querySelector(".scroll-hint").textContent = "Scroll to discover more ↓";
     document.getElementById("hero-cta").textContent = "Start Your Project";
     document.getElementById("hero-works-cta").textContent = "See the Work";
-    document.querySelector(".works-header .btn-ghost").textContent = "All Playlists →";
+    document.querySelector(".works-header .btn-ghost").textContent = "All Playlists ↓";
     document.querySelectorAll(".about-card h3")[0].textContent = "Calculated Rhythm";
     document.querySelectorAll(".about-card p")[0].textContent = "Every cut and transition serves the story. No filler, no random moves — just editing that serves the message and delivers it the shortest way.";
     document.querySelectorAll(".about-card h3")[1].textContent = "Colors That Speak";
@@ -410,12 +419,12 @@ function updateDynamicText() {
     if (heroTitle) heroTitle.innerHTML = headlineMarkup();
     if (heroSub) heroSub.textContent = "مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.";
     if (worksTitle) worksTitle.innerHTML = 'أعمالي<span class="dot">.</span>';
+    if (nichesTitle) nichesTitle.innerHTML = 'البلاي ليستات<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'عن <span class="dot">VEX</span>';
     document.querySelector(".hero-kicker .kicker-text").textContent = "مونتاجك";
-    document.querySelector(".scroll-hint").textContent = "اسحب لاكتشاف المزيد ↓";
     document.getElementById("hero-cta").textContent = "ابدأ مشروعك";
     document.getElementById("hero-works-cta").textContent = "شوف الأعمال";
-    document.querySelector(".works-header .btn-ghost").textContent = "كل البلاي ليستات →";
+    document.querySelector(".works-header .btn-ghost").textContent = "كل البلاي ليستات ↓";
     document.querySelectorAll(".about-card h3")[0].textContent = "إيقاع محسوب";
     document.querySelectorAll(".about-card p")[0].textContent = "كل قطّة وكل انتقال بيخدم القصة. مفيش حشو، مفيش حركات عشوائية — بس مونتاج بيخدم الرسالة ويوصلها بأقصر طريق.";
     document.querySelectorAll(".about-card h3")[1].textContent = "ألوان بتتكلم";
@@ -455,11 +464,8 @@ function initScene() {
   const key = new THREE.PointLight(0x7058d4, 60, 60);
   key.position.set(5, 6, 6);
   scene.add(key);
-  const rim = new THREE.PointLight(0x8b3dff, 40, 60);
-  rim.position.set(-6, -4, 4);
-  scene.add(rim);
 
-  // Particle field
+  // Ambient particle field
   const particleCount = isMobile ? 500 : 1500;
   const positions = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
@@ -475,69 +481,7 @@ function initScene() {
   );
   scene.add(particles);
 
-  // Hero group: orbiting rings + VEX text + wireframe cage + dust layers
-  const heroGroup = new THREE.Group();
-  heroGroup.position.set(0, isMobile ? -2.2 : -1.2, isMobile ? -6 : -3); heroGroup.scale.setScalar(isMobile ? 0.42 : 0.8);
-  scene.add(heroGroup);
-
-  const ringGeo = new THREE.TorusGeometry(3.5, 0.08, 16, 100);
-  const ringMat = new THREE.MeshBasicMaterial({
-    color: 0x8b3dff,
-    transparent: true,
-    opacity: 0.4,
-    side: THREE.DoubleSide
-  });
-
-  const rings = [];
-  for (let i = 0; i < 3; i++) {
-    const ring = new THREE.Mesh(ringGeo, ringMat.clone());
-    ring.rotation.x = Math.PI / 2 + (i * 0.3);
-    ring.rotation.z = i * 0.4;
-    ring.userData = { speed: 0.15 + i * 0.05, tilt: i * 0.3, phase: i * 2 };
-    heroGroup.add(ring);
-    rings.push(ring);
-  }
-
-  let vexText = null;
-  new FontLoader().load(
-    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json",
-    (font) => {
-      const geo = new TextGeometry("VEX", {
-        font, size: isMobile ? 0.9 : 1.2, height: 0.35,
-        curveSegments: 8, bevelEnabled: true,
-        bevelThickness: 0.04, bevelSize: 0.03, bevelSegments: 3,
-      });
-      geo.center();
-      vexText = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color: 0x35304a, metalness: 0.9, roughness: 0.18,
-        emissive: 0x8b3dff, emissiveIntensity: 0.5
-      }));
-      vexText.position.set(0, 0, 0);
-      heroGroup.add(vexText);
-
-      // Wireframe TorusKnot cage around VEX text
-      const cageGeo = new THREE.TorusKnotGeometry(2.2, 0.5, 128, 16, 2, 3);
-      const cageMat = new THREE.MeshBasicMaterial({
-        color: 0x8b3dff,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.2
-      });
-      const cage = new THREE.Mesh(cageGeo, cageMat);
-      cage.rotation.x = Math.PI / 2;
-      heroGroup.add(cage);
-      heroGroup.userData.cage = cage;
-
-      // Orbiting white sweep light for metallic highlights
-      const sweepLight = new THREE.PointLight(0xffffff, 80, 15);
-      sweepLight.position.set(8, 8, 8);
-      heroGroup.add(sweepLight);
-      heroGroup.userData.sweepLight = sweepLight;
-    },
-    undefined, () => {}
-  );
-
-  // Two-layer dust: far (1600 small) + near (320 bigger/brighter)
+  // Two-layer dust: far drifts one way, near drifts opposite
   const dustFarCount = isMobile ? 800 : 1600;
   const dustFarPositions = new Float32Array(dustFarCount * 3);
   for (let i = 0; i < dustFarCount; i++) {
@@ -570,226 +514,162 @@ function initScene() {
   dustNearGeo.setAttribute("position", new THREE.BufferAttribute(dustNearPositions, 3));
   const dustNear = new THREE.Points(
     dustNearGeo,
-    new THREE.PointsMaterial({ color: 0x8b3dff, size: 0.05, transparent: true, opacity: 0.6 })
+    new THREE.PointsMaterial({ color: 0x8b3dff, size: 0.05, transparent: true, opacity: 0.45 })
   );
-  heroGroup.add(dustNear);
+  scene.add(dustNear);
 
-  // Orbiting purple orbs
-  const orbGeo = new THREE.SphereGeometry(0.15, 16, 16);
-  const orbMat = new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.6 });
-  const orbs = [];
-  for (let i = 0; i < 6; i++) {
-    const orb = new THREE.Mesh(orbGeo, orbMat.clone());
-    orb.userData = { angle: (i / 6) * Math.PI * 2, radius: 4.5, speed: 0.08 + i * 0.02, yOffset: (Math.random() - 0.5) * 2 };
-    heroGroup.add(orb);
-    orbs.push(orb);
-  }
-
-  // ---- Hero character: glossy soft play-button prism (MORI MOCHI reference level) ----
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-  function roundedTriShape(R, cr) {
-    // rounded triangle pointing right (+x)
-    const pts = [];
-    for (let i = 0; i < 3; i++) {
-      const a = (i * Math.PI * 2) / 3;
-      pts.push(new THREE.Vector2(Math.cos(a) * R, Math.sin(a) * R));
-    }
-    const sh = new THREE.Shape();
-    for (let i = 0; i < 3; i++) {
-      const cur = pts[i], next = pts[(i + 1) % 3], prev = pts[(i + 2) % 3];
-      const toPrev = prev.clone().sub(cur).normalize();
-      const toNext = next.clone().sub(cur).normalize();
-      const p1 = cur.clone().add(toPrev.multiplyScalar(cr));
-      const p2 = cur.clone().add(toNext.multiplyScalar(cr));
-      if (i === 0) sh.moveTo(p1.x, p1.y); else sh.lineTo(p1.x, p1.y);
-      sh.quadraticCurveTo(cur.x, cur.y, p2.x, p2.y);
-    }
-    sh.closePath();
-    return sh;
-  }
-
-  const prismGeo = new THREE.ExtrudeGeometry(roundedTriShape(1.5, 0.45), {
-    depth: 0.55, bevelEnabled: true, bevelThickness: 0.16, bevelSize: 0.16,
-    bevelSegments: 5, curveSegments: 32
-  });
-  prismGeo.center();
-  const prismMat = new THREE.MeshPhysicalMaterial({
-    color: 0x9b5cff, metalness: 0.08, roughness: 0.2,
-    clearcoat: 1, clearcoatRoughness: 0.12,
-    emissive: 0x3d1a80, emissiveIntensity: 0.22, envMapIntensity: 1.6
-  });
-  // heroGroup shrinks/shifts on mobile, so the prism lives at scene level with per-form-factor placement
-  const pConf = isMobile
-    ? { y: -0.55, z: -1.1, s: 1.15, shY: -1.85, shS: 0.62 }
-    : { y: -0.48, z: -1.24, s: 1.52, shY: -2.08, shS: 0.8 };
-  const prism = new THREE.Mesh(prismGeo, prismMat);
-  prism.position.set(0, pConf.y, pConf.z);
-  prism.rotation.y = -0.35;
-  prism.scale.setScalar(pConf.s);
-  scene.add(prism);
-
-  // soft fake contact shadow under the prism
-  const shadowCanvas = document.createElement("canvas");
-  shadowCanvas.width = shadowCanvas.height = 128;
-  const sctx = shadowCanvas.getContext("2d");
-  const grad = sctx.createRadialGradient(64, 64, 6, 64, 64, 62);
-  grad.addColorStop(0, "rgba(20,8,45,0.85)");
-  grad.addColorStop(1, "rgba(20,8,45,0)");
-  sctx.fillStyle = grad;
-  sctx.fillRect(0, 0, 128, 128);
-  const shadowTex = new THREE.CanvasTexture(shadowCanvas);
-  const prismShadow = new THREE.Sprite(new THREE.SpriteMaterial({ map: shadowTex, transparent: true, opacity: 0.8, depthWrite: false }));
-  prismShadow.scale.set(4.2 * pConf.shS, 1.9 * pConf.shS, 1);
-  prismShadow.position.set(0, pConf.shY, pConf.z);
-  scene.add(prismShadow);
-
-  // glossy key light for the prism
-  const prismKey = new THREE.DirectionalLight(0xfff1e0, 2.2);
-  prismKey.position.set(4, 6, 7);
-  scene.add(prismKey);
-  const prismFill = new THREE.DirectionalLight(0x9a6bff, 0.9);
-  prismFill.position.set(-4, -1, 6);
-  scene.add(prismFill);
-
-  // Interaction
-  let dragging = false, lastX = 0, lastY = 0, rotY = 0, rotX = 0, rotVel = 0, rotXVel = 0;
+  // Interaction: pointer parallax only; scroll moves the camera gently (continuous scrub)
   const pointer = { x: 0, y: 0 };
   let scrollY = 0;
-
   window.addEventListener("pointermove", (e) => {
     pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    if (dragging) {
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      rotVel = dx * 0.004;
-      rotXVel = -dy * 0.004;
-      rotY += rotVel;
-      rotX += rotXVel;
-      rotX = Math.max(-0.5, Math.min(0.5, rotX)); // clamp vertical drag
-    }
   }, { passive: true });
-
-  canvas.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
-  window.addEventListener("pointerup", () => { dragging = false; });
-  window.addEventListener("pointercancel", () => { dragging = false; });
-
   window.addEventListener("scroll", () => { scrollY = window.scrollY; }, { passive: true });
-
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  const clock = new THREE.Clock();
   function animate() {
     requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
-
-    // Intro progress: 0→1 during 2s intro, then stays 1
+    // Intro dive 38 -> 9 with easeOutCubic, then a gentle scroll-linked drift
     const introP = window.__introP ?? 0;
-
-    // easeOutCubic: 1 - (1 - p)^3
     const introPEase = 1 - Math.pow(1 - introP, 3);
-
-    // Scroll-driven camera: z = 9 + scrollY*0.004, y = -scrollY*0.0025
-    const scrollZ = 9 + scrollY * 0.004;
-    const scrollYPos = -scrollY * 0.0025;
-    const scrollYaw = scrollY * 0.0006;
-
-    // Camera: intro dive from z=46 to z=9 with easeOutCubic, then scroll-driven + pointer parallax
-    const targetZ = 38 - introPEase * 29; // 38 at introP=0, 9 at introP=1
-    const camTargetZ = introP < 1 ? targetZ : scrollZ;
-    const camTargetY = introP < 1 ? 0 : scrollYPos;
-    camera.position.x += (pointer.x * 0.9 - camera.position.x) * 0.03;
-    camera.position.y += (camTargetY - pointer.y * 0.5 - camera.position.y) * 0.03;
+    const sNorm = scrollY / window.innerHeight;
+    const targetZ = 38 - introPEase * 29;
+    const camTargetZ = introP < 1 ? targetZ : 9 + sNorm * 0.35;
+    const camTargetY = introP < 1 ? 0 : -sNorm * 0.15;
+    camera.position.x += (pointer.x * 0.5 - camera.position.x) * 0.03;
+    camera.position.y += (camTargetY - pointer.y * 0.3 - camera.position.y) * 0.03;
     camera.position.z += (camTargetZ - camera.position.z) * 0.045;
     camera.lookAt(0, 0, 0);
 
-    // Hero prism: float, pointer steering, soft wobble
-    if (prism) {
-      const floatY = Math.sin(t * 1.15) * 0.28;
-      prism.position.y = pConf.y + floatY;
-      const targetRotY = -0.18 + pointer.x * 0.4 + Math.sin(t * 0.35) * 0.26;
-      const targetRotX = -pointer.y * 0.32;
-      prism.rotation.y += (targetRotY - prism.rotation.y) * 0.06;
-      prism.rotation.x += (targetRotX - prism.rotation.x) * 0.06;
-      const wob = Math.sin(t * 2.1);
-      prism.scale.y = pConf.s * (1 + wob * 0.045);
-      prism.scale.x = prism.scale.z = pConf.s * (1 - wob * 0.03);
-      // contact shadow tracks the float
-      const lift = (floatY + 0.28) / 0.56; // 0..1
-      prismShadow.material.opacity = 0.85 - lift * 0.35;
-      const shScale = (4.2 - lift * 0.9) * pConf.shS;
-      prismShadow.scale.set(shScale, shScale * 0.45, 1);
-    }
-
-    // Rings: 4x speed during intro, easing to 1x
-    const ringSpeedMult = 4 - 3 * introPEase; // 4x at introP=0, 1x at introP=1
-    rings.forEach((r, i) => {
-      r.rotation.y += r.userData.speed * ringSpeedMult;
-      r.rotation.z = r.userData.tilt + Math.sin(t * 0.5 + r.userData.phase) * 0.15;
-    });
-
-    // TorusKnot cage: slow idle rotation + emissive pulse
-    if (heroGroup.userData.cage) {
-      heroGroup.userData.cage.rotation.y += 0.002;
-      heroGroup.userData.cage.rotation.x += 0.001;
-    }
-
-    // Sweep light orbiting for moving metallic highlights
-    if (heroGroup.userData.sweepLight) {
-      const r = 10;
-      heroGroup.userData.sweepLight.position.set(
-        Math.cos(t * 0.4) * r,
-        Math.sin(t * 0.3) * 4 + 4,
-        Math.sin(t * 0.4) * r
-      );
-    }
-
-    // VEX text: emissive pulse + pointer parallax + drag + scroll yaw
-    if (vexText) {
-      const pulse = 0.5 + Math.sin(t * 2) * 0.15; // 0.5±0.15
-      vexText.material.emissiveIntensity = pulse;
-      vexText.rotation.y = Math.sin(t * 0.3) * 0.15 + rotY * 0.3 + scrollYaw;
-      vexText.rotation.x = rotX * 0.3;
-      vexText.position.y = Math.sin(t * 0.6) * 0.15;
-    }
-
-    // Orbs: 4x speed during intro, easing to 1x
-    const orbSpeedMult = 4 - 3 * introPEase; // 4x at introP=0, 1x at introP=1
-    orbs.forEach((o, i) => {
-      o.userData.angle += o.userData.speed * orbSpeedMult;
-      o.position.set(
-        Math.cos(o.userData.angle) * o.userData.radius,
-        o.userData.yOffset + Math.sin(t * 0.7 + i) * 0.5,
-        Math.sin(o.userData.angle) * o.userData.radius
-      );
-    });
-
-    // Dust layers: far drifts one way, near drifts opposite
-    dustFar.rotation.y = t * -0.0015;
-    dustNear.rotation.y = t * 0.003;
-    // Scroll parallax for dust
+    dustFar.rotation.y += -0.0005;
+    dustNear.rotation.y += 0.001;
     dustFar.position.y = scrollY * 0.004;
     dustNear.position.y = scrollY * 0.009;
-
-    particles.rotation.y = t * 0.008;
-
-    // Drag inertia
-    if (!dragging) { rotVel *= 0.95; rotXVel *= 0.95; rotY += rotVel; rotX += rotXVel; }
-    heroGroup.rotation.y += (rotY - heroGroup.rotation.y) * 0.08;
-    heroGroup.rotation.x += (rotX - heroGroup.rotation.x) * 0.08;
+    particles.rotation.y += 0.0006;
 
     renderer.render(scene, camera);
   }
   animate();
 }
+
+// ================= Persona particle hero (ported from particles.html — the effect Hamza approved) =================
+(function initPersona() {
+  if (reducedMotion) return;
+  const pc = document.getElementById("persona");
+  if (!pc) return;
+  const pctx = pc.getContext("2d");
+  let pts = [], PW = 0, PH = 0;
+  const pmouse = { x: -9999, y: -9999, active: false };
+  const REP_R = isMobile ? 100 : 140;   // repulsion radius (css px)
+  const REP_F = isMobile ? 12 : 18;     // repulsion force
+  const SPRING = 0.03, DAMP = 0.875;
+  const ss2 = (x, a, b) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t); };
+  let pScrollY = 0, pMaxS = 4;
+  const pMeasure = () => { pMaxS = Math.max(1, (document.documentElement.scrollHeight - innerHeight) / innerHeight); };
+  pMeasure();
+
+  function build(img) {
+    const off = document.createElement("canvas");
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    off.width = iw; off.height = ih;
+    const octx = off.getContext("2d", { willReadFrequently: true });
+    octx.drawImage(img, 0, 0);
+    const data = octx.getImageData(0, 0, iw, ih).data;
+
+    PW = innerWidth; PH = innerHeight;
+    const DPR = Math.min(devicePixelRatio || 1, 2);
+    pc.width = PW * DPR; pc.height = PH * DPR;
+    pctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    const targetH = isMobile ? Math.min(PH * 0.5, 460) : Math.min(PH * 0.58, 520);
+    const scale = targetH / ih;
+    const dispW = iw * scale;
+    // desktop: persona stands to the side of the centered headline; mobile: centered behind it
+    const ox = isMobile ? (PW - dispW) / 2 : PW * 0.76 - dispW / 2;
+    const oy = isMobile ? PH * 0.54 - targetH / 2 : (PH - targetH) / 2 + PH * 0.03;
+    const step = isMobile ? 5 : 4;
+    const dot = Math.max(1.1, step * scale * 0.62);
+
+    pts = [];
+    for (let y = 0; y < ih; y += step) {
+      for (let x = 0; x < iw; x += step) {
+        const a = data[(y * iw + x) * 4 + 3];
+        if (a < 120) continue;
+        const i = (y * iw + x) * 4;
+        const hx = ox + x * scale, hy = oy + y * scale;
+        pts.push({
+          hx, hy, x: hx, y: hy, vx: 0, vy: 0,
+          c: `rgb(${Math.min(255, data[i] * 1.9 + 26) | 0},${Math.min(255, data[i + 1] * 1.9 + 22) | 0},${Math.min(255, data[i + 2] * 1.9 + 34) | 0})`,
+          s: dot * (0.8 + Math.random() * 0.4),
+          sx: (Math.random() - 0.5) * 2 * (80 + Math.random() * 300),
+          sy: (Math.random() - 0.75) * 2 * (80 + Math.random() * 260),
+          a: 0.55 + Math.random() * 0.45,
+          seed: Math.random() * Math.PI * 2
+        });
+      }
+    }
+  }
+
+  function frame(tms) {
+    const t = tms / 1000;
+    pctx.clearRect(0, 0, PW, PH);
+    // Scroll journey: the persona dissolves away as you leave the hero, reassembles for the finale
+    const sN = pScrollY / innerHeight;
+    let eff = ss2(sN, 0.2, 1.05);
+    eff *= 1 - ss2(sN, pMaxS - 0.95, pMaxS - 0.3);
+    const alphaBase = (isMobile ? 0.55 : 0.85) * (1 - eff * 0.85);
+
+    if (pmouse.active && eff < 0.5) {
+      const g = pctx.createRadialGradient(pmouse.x, pmouse.y, 0, pmouse.x, pmouse.y, REP_R * 1.6);
+      g.addColorStop(0, "rgba(139,61,255,.12)");
+      g.addColorStop(1, "rgba(139,61,255,0)");
+      pctx.fillStyle = g;
+      pctx.fillRect(pmouse.x - REP_R * 1.6, pmouse.y - REP_R * 1.6, REP_R * 3.2, REP_R * 3.2);
+    }
+    const R2 = REP_R * REP_R;
+    const repScale = 1 - eff; // cursor only scatters it while it's assembled
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      if (repScale > 0.05) {
+        const dx = p.x - pmouse.x, dy = p.y - pmouse.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < R2 && d2 > 0.01) {
+          const d = Math.sqrt(d2);
+          const f = (1 - d / REP_R) ** 2 * REP_F * repScale;
+          p.vx += (dx / d) * f; p.vy += (dy / d) * f;
+        }
+      }
+      const tx = p.hx + p.sx * eff, ty = p.hy + p.sy * eff;
+      p.vx += (tx - p.x) * SPRING; p.vy += (ty - p.y) * SPRING;
+      p.vx *= DAMP; p.vy *= DAMP;
+      p.x += p.vx; p.y += p.vy;
+      const spd = Math.abs(p.vx) + Math.abs(p.vy);
+      const wob = spd < 0.6 ? Math.sin(t * 1.6 + p.seed) * 0.35 : 0;
+      pctx.globalAlpha = Math.max(0, alphaBase * p.a);
+      pctx.fillStyle = p.c;
+      pctx.fillRect(p.x, p.y + wob, p.s, p.s);
+    }
+    pctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+
+  addEventListener("pointermove", e => { pmouse.x = e.clientX; pmouse.y = e.clientY; pmouse.active = true; }, { passive: true });
+  addEventListener("pointerleave", () => { pmouse.active = false; pmouse.x = pmouse.y = -9999; });
+  addEventListener("touchmove", e => { const t = e.touches[0]; pmouse.x = t.clientX; pmouse.y = t.clientY; pmouse.active = true; }, { passive: true });
+  addEventListener("touchend", () => { pmouse.active = false; pmouse.x = pmouse.y = -9999; });
+  addEventListener("scroll", () => { pScrollY = window.scrollY; }, { passive: true });
+  addEventListener("resize", () => { pMeasure(); });
+
+  const img = new Image();
+  img.src = "mummy-drawn.webp";
+  img.onload = () => { build(img); requestAnimationFrame(frame); };
+  let rsz; addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(() => build(img), 180); });
+})();
 
 // ================= Supabase Data Loading =================
 let allWorks = [];
@@ -992,7 +872,7 @@ function renderCoverflow(works) {
 // ================= Scroll Animations (IntersectionObserver) =================
 function initScrollAnimations() {
   if (reducedMotion) {
-    document.querySelectorAll(".stat-card, .about-card, .works-header, .stats, .about").forEach(el => {
+    document.querySelectorAll(".stat-card, .about-card, .works-header, .stats, .about, .niches").forEach(el => {
       el.style.opacity = "1";
       el.style.transform = "none";
     });
@@ -1013,7 +893,7 @@ function initScrollAnimations() {
     });
   }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
 
-  document.querySelectorAll(".stat-card, .about-card, .works-header, .stats, .about").forEach(el => {
+  document.querySelectorAll(".stat-card, .about-card, .works-header, .stats, .about, .niches").forEach(el => {
     el.style.opacity = "0";
     el.style.transform = "perspective(900px) rotateX(6deg) translateY(36px)";
     el.style.transition = "opacity 0.7s ease-out, transform 0.7s ease-out";
@@ -1028,8 +908,7 @@ function initHeroEntrance() {
     document.querySelector(".hero-kicker"),
     document.querySelector(".hero h1"),
     document.querySelector(".hero-sub"),
-    document.querySelector(".hero-actions"),
-    document.querySelector(".scroll-hint")
+    document.querySelector(".hero-actions")
   ].filter(Boolean);
   elements.forEach((el, i) => {
     el.style.opacity = "0";
