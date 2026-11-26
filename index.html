@@ -381,16 +381,24 @@ function buildHeadline(lines, perLetter) {
 }
 
 function paintHeadlineGradient(h1) {
+  // Old-site look: ONE continuous gradient spanning the whole headline.
+  // Each unit samples its slice of the h1-wide gradient via size/position.
   h1 = h1 || document.getElementById("hero-title");
   if (!h1) return;
-  h1.querySelectorAll(".h-line").forEach((line) => {
-    const w = line.offsetWidth;
-    if (!w) return;
-    const lo = line.offsetLeft; // offsets are body-relative; make them line-relative
-    line.querySelectorAll(".grad").forEach((u) => {
-      u.style.backgroundSize = w + "px 100%";
-      u.style.backgroundPosition = "-" + (u.offsetLeft - lo) + "px 0";
-    });
+  const units = Array.from(h1.querySelectorAll(".grad"));
+  if (!units.length) return;
+  const saved = units.map((u) => u.style.transform);
+  units.forEach((u) => { u.style.transform = "none"; }); // measure untransformed geometry
+  const range = document.createRange();
+  range.selectNodeContents(h1);
+  const base = range.getBoundingClientRect();
+  if (!base.width || !base.height) { units.forEach((u, i) => { u.style.transform = saved[i]; }); return; }
+  units.forEach((u, i) => {
+    const r = u.getBoundingClientRect();
+    u.style.backgroundSize = base.width + "px " + base.height + "px";
+    u.style.backgroundPosition =
+      "-" + (r.left - base.left).toFixed(1) + "px -" + (r.top - base.top).toFixed(1) + "px";
+    u.style.transform = saved[i];
   });
 }
 if (document.fonts && document.fonts.ready) {
