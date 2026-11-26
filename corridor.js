@@ -77,7 +77,7 @@ import * as THREE from 'three';
   const PORTRAIT = innerWidth < innerHeight;
   const camera = new THREE.PerspectiveCamera(PORTRAIT ? 88 : 62, innerWidth / innerHeight, 0.1, 90);
 
-  scene.add(new THREE.AmbientLight(0x9a7bd8, 1.0));
+  scene.add(new THREE.AmbientLight(0x9a7bd8, 1.45));
   scene.add(new THREE.HemisphereLight(0x4a3a80, 0x0a0a18, 0.5));
   const key = new THREE.PointLight(0xb07cff, 50, 34); scene.add(key);
 
@@ -211,7 +211,7 @@ import * as THREE from 'three';
     const p = curve.getPointAt(u), tan = curve.getTangentAt(u);
     const nor = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
     const group = new THREE.Group();
-    const W = 3.2, H = 4.3; /* 9:16-ish reel frame */
+    const W = 3.5, H = 4.65; /* 9:16-ish reel frame */
 
     const mat = new THREE.MeshBasicMaterial({ map: work.posterTex || placeholderTexture(work.title), side: THREE.DoubleSide });
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(W, H), mat);
