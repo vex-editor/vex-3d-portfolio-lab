@@ -386,9 +386,10 @@ function paintHeadlineGradient(h1) {
   h1.querySelectorAll(".h-line").forEach((line) => {
     const w = line.offsetWidth;
     if (!w) return;
+    const lo = line.offsetLeft; // offsets are body-relative; make them line-relative
     line.querySelectorAll(".grad").forEach((u) => {
       u.style.backgroundSize = w + "px 100%";
-      u.style.backgroundPosition = "-" + u.offsetLeft + "px 0";
+      u.style.backgroundPosition = "-" + (u.offsetLeft - lo) + "px 0";
     });
   });
 }
