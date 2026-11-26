@@ -193,11 +193,11 @@ import * as THREE from 'three';
     const group = new THREE.Group();
     const W = 2.9, H = 4.0; /* 9:16-ish reel frame */
 
-    const mat = new THREE.MeshBasicMaterial({ map: work.posterTex || placeholderTexture(work.title) });
+    const mat = new THREE.MeshBasicMaterial({ map: work.posterTex || placeholderTexture(work.title), side: THREE.DoubleSide });
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(W, H), mat);
     const frame = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.22, H + 0.22), new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.85, wireframe: true }));
     frame.position.z = -0.02;
-    const halo = new THREE.Mesh(new THREE.PlaneGeometry(W + 1.1, H + 1.1), new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.10, blending: THREE.AdditiveBlending }));
+    const halo = new THREE.Mesh(new THREE.PlaneGeometry(W + 1.4, H + 1.4), new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
     halo.position.z = -0.09;
     const plate = titlePlate(work.title);
     plate.position.y = H / 2 + 0.55;
@@ -337,7 +337,7 @@ import * as THREE from 'three';
         title: w.title || 'ريل',
         description: (w.description || '').trim(),
         mp4: (prev && prev[1]) || (local && local[0]) || null,
-        poster: (prev && prev[0]) || (local && local[1]) || (w.cover_url && w.cover_url.trim()) || (did ? driveThumb(did) : null),
+        poster: (prev && prev[0]) || (local && local[1]) || (did ? driveThumb(did) : (w.cover_url && w.cover_url.trim()) || null),
         posterTex: null,
       };
     });
