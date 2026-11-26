@@ -217,16 +217,16 @@ import * as THREE from 'three';
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(W, H), mat);
     const frame = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.22, H + 0.22), new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.85, wireframe: true }));
     frame.position.z = -0.02;
-    const halo = new THREE.Mesh(new THREE.PlaneGeometry(W + 1.4, H + 1.4), new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+    const halo = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.7, H + 0.7), new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: 0.13, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
     halo.position.z = -0.09;
     const plate = titlePlate(work.title);
     plate.position.y = H / 2 + 0.55;
 
     group.add(halo, frame, screen, plate);
-    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 1.1)));
+    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 0.8)));
     group.position.set(wallPoint.x, 0.35, wallPoint.z);
     /* face the spot where the visitor stands when the panel is the nearest one */
-    const stand = curve.getPointAt(Math.max(0.001, u - 0.07));
+    const stand = curve.getPointAt(Math.max(0.001, u - 0.045));
     group.lookAt(stand.setY(0.35));
     /* purple light strip above the panel */
     const strip = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.4, 0.07), new THREE.MeshBasicMaterial({ color: 0xb07cff, side: THREE.DoubleSide }));
