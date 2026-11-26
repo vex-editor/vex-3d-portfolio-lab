@@ -621,8 +621,9 @@ function initScene() {
     // Scroll journey: the persona dissolves away as you leave the hero, reassembles for the finale
     const sN = pScrollY / innerHeight;
     let eff = ss2(sN, 0.2, 1.05);
-    eff *= 1 - ss2(sN, pMaxS - 0.95, pMaxS - 0.3);
-    const alphaBase = (isMobile ? 0.55 : 0.85) * (1 - eff * 0.85);
+    const pBack = ss2(sN, pMaxS - 0.95, pMaxS - 0.3);
+    eff *= 1 - pBack;
+    const alphaBase = (isMobile ? 0.55 : 0.85) * (1 - eff * 0.85) * (1 - pBack * 0.25);
 
     if (pmouse.active && eff < 0.5) {
       const g = pctx.createRadialGradient(pmouse.x, pmouse.y, 0, pmouse.x, pmouse.y, REP_R * 1.6);
@@ -662,7 +663,7 @@ function initScene() {
   addEventListener("pointerleave", () => { pmouse.active = false; pmouse.x = pmouse.y = -9999; });
   addEventListener("touchmove", e => { const t = e.touches[0]; pmouse.x = t.clientX; pmouse.y = t.clientY; pmouse.active = true; }, { passive: true });
   addEventListener("touchend", () => { pmouse.active = false; pmouse.x = pmouse.y = -9999; });
-  addEventListener("scroll", () => { pScrollY = window.scrollY; }, { passive: true });
+  addEventListener("scroll", () => { pScrollY = window.scrollY; pMeasure(); }, { passive: true });
   addEventListener("resize", () => { pMeasure(); });
 
   const img = new Image();
