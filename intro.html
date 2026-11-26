@@ -9,7 +9,8 @@
 <style>
   :root { --purple:#8B3DFF; --purple-bright:#A66BFF; --fg:#F4F2FF; --muted:#9A94B8; --border:rgba(139,61,255,.18); }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#06070F; color:var(--fg); font-family:'Readex Pro',sans-serif; overflow-x:hidden; transition:background-color .9s ease; }
+  html, body { height:100%; }
+  body { background:#06070F; color:var(--fg); font-family:'Readex Pro',sans-serif; overflow:hidden; }
 
   header.lab-nav {
     position:fixed; inset-inline:0; top:0; z-index:50; display:flex; align-items:center;
@@ -18,29 +19,25 @@
   }
   .logo { font-weight:900; font-size:1.3rem; color:var(--fg); text-decoration:none; }
   .logo span { color:var(--purple-bright); }
-  .nav-links { display:flex; gap:10px; }
   .back-link {
     color:var(--muted); text-decoration:none; font-size:.85rem; border:1px solid var(--border);
     padding:7px 14px; border-radius:999px; transition:.2s;
   }
   .back-link:hover { color:var(--fg); border-color:var(--purple); background:rgba(139,61,255,.12); }
 
-  .scene { position:relative; }
-  .stage { position:sticky; top:0; height:100vh; height:100svh; overflow:hidden; display:grid; place-items:center; perspective:1100px; }
-  .scene-title {
-    position:absolute; top:8vh; inset-inline:0; text-align:center; z-index:3;
-    font-weight:900; font-size:clamp(2rem,7vw,5.5rem); line-height:1.1; will-change:transform,opacity;
-  }
-  .scene-title small { display:block; font-size:clamp(.75rem,1.5vw,1rem); color:var(--muted); font-weight:400; margin-top:12px; letter-spacing:.04em; }
-
-  /* Scene A: full-viewport intro video, edge to edge */
-  #sceneA { height:170vh; }
+  /* Intro: full-viewport video, edge to edge, never cropped */
+  #intro { position:relative; height:100vh; height:100svh; display:grid; place-items:center; }
   #videoWrapA {
     position:relative; width:100vw; aspect-ratio:16/9; overflow:hidden; background:#06070F;
   }
   #videoWrapA video { width:100%; height:100%; object-fit:contain; display:block; }
   #videoWrapA:fullscreen { width:100%; height:100%; aspect-ratio:auto; background:#000; }
-  #titleA { text-shadow:0 4px 30px rgba(6,7,15,.85), 0 1px 8px rgba(6,7,15,.6); }
+  #titleA {
+    position:absolute; top:8vh; inset-inline:0; text-align:center; z-index:3;
+    font-weight:900; font-size:clamp(2rem,7vw,5.5rem); line-height:1.1; pointer-events:none;
+    text-shadow:0 4px 30px rgba(6,7,15,.85), 0 1px 8px rgba(6,7,15,.6);
+  }
+
   /* Enter gate: shown only when unmuted autoplay is blocked */
   #enterGate {
     position:fixed; inset:0; z-index:40; display:none; place-items:center; cursor:pointer;
@@ -52,65 +49,20 @@
   .gate-logo span { color:var(--purple-bright); }
   .gate-hint { margin-top:14px; color:var(--muted); font-size:clamp(.85rem,2vw,1rem); }
   @keyframes gatePulse { 0%,100% { opacity:.75; transform:scale(1); } 50% { opacity:1; transform:scale(1.03); } }
+
   /* Fade to site when the intro ends */
   #fadeOut {
     position:fixed; inset:0; z-index:60; background:#06070F; opacity:0;
     pointer-events:none; transition:opacity .8s ease;
   }
   #fadeOut.show { opacity:1; }
-
-  /* Scene B: horizontal 3D work strip */
-  #sceneB { height:320vh; }
-  #trackB { display:flex; gap:3vw; will-change:transform; transform-style:preserve-3d; }
-  .wcard {
-    width:min(420px,70vw); aspect-ratio:16/10; border-radius:18px; overflow:hidden; flex:0 0 auto;
-    border:1px solid var(--border); box-shadow:0 24px 70px rgba(0,0,0,.55); will-change:transform;
-    position:relative; background:#0B0D1A;
-  }
-  .wcard video { width:100%; height:100%; object-fit:cover; display:block; }
-  .wcard figcaption {
-    position:absolute; bottom:0; inset-inline:0; padding:10px 16px; font-size:.78rem;
-    background:linear-gradient(0deg, rgba(6,7,15,.9), transparent); color:var(--fg);
-  }
-
-  /* Scene E: hero-scroll poster scatter */
-  #sceneE { height:300vh; }
-  #scatterE { position:absolute; inset:0; transform-style:preserve-3d; }
-  .scard {
-    position:absolute; width:min(240px,30vw); aspect-ratio:4/3; border-radius:14px; overflow:hidden;
-    border:1px solid var(--border); box-shadow:0 20px 60px rgba(0,0,0,.55); will-change:transform,opacity;
-  }
-  .scard img { width:100%; height:100%; object-fit:cover; display:block; }
-  #titleE {
-    position:relative; z-index:2; text-align:center; font-weight:900;
-    font-size:clamp(2.4rem,9vw,7rem); line-height:1.15; will-change:transform,opacity;
-  }
-  #titleE small { display:block; font-size:clamp(.8rem,1.6vw,1.05rem); color:var(--muted); font-weight:400; margin-top:14px; }
-
-  /* Scene D: CTA */
-  #sceneD { height:110vh; }
-  #sceneD .stage { display:grid; place-items:center; }
-  .cta-box { text-align:center; }
-  .cta-giant {
-    font-weight:900; font-size:clamp(4rem,16vw,12rem); line-height:1; color:transparent;
-    -webkit-text-stroke:1.5px rgba(139,61,255,.4); user-select:none; will-change:transform;
-  }
-  .cta-btn {
-    display:inline-block; margin-top:34px; background:var(--purple); color:#fff; text-decoration:none;
-    font-weight:700; padding:16px 42px; border-radius:999px; font-size:1.05rem;
-    box-shadow:0 14px 44px rgba(139,61,255,.45); transition:transform .25s, box-shadow .25s;
-  }
-  .cta-btn:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 20px 60px rgba(139,61,255,.6); }
-  .cta-ghost { background:transparent; border:1px solid var(--border); box-shadow:none; margin-inline-start:12px; }
-  .cta-ghost:hover { background:rgba(139,61,255,.12); box-shadow:none; }
-
 </style>
 </head>
 <body>
 
 <!-- INTRO MODULE for the main VEX site (prepared in the lab, pending "نزل").
-     Drop this file + its assets (posters/, the 6 mp4s, the 6 scard jpgs,
-     4-vex-motion-poster.jpg, 2-coffee-before-after-poster.jpg) into the site and link/redirect to it. -->
+     Drop this file + intro-sceneA.mp4 + posters/intro-sceneA.jpg into the site
+     and link/redirect to it. Video ends -> fades straight into ./ (the site). -->
 <header class="lab-nav">
   <a class="logo" href="./">VEX<span>.</span></a>
   <div class="nav-links">
@@ -118,15 +70,12 @@
   </div>
 </header>
 
-<!-- A: container-scroll video reveal -->
-<section class="scene" id="sceneA" data-bg="#06070F">
-  <div class="stage">
-    <h1 class="scene-title" id="titleA">الشغل اللي بيتشاف<small>انزل تحت — الجولة بتبدأ</small></h1>
-    <div id="videoWrapA">
-      <video id="videoA" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted playsinline autoplay></video>
-    </div>
+<div id="intro">
+  <h1 id="titleA">الشغل اللي بيتشاف</h1>
+  <div id="videoWrapA">
+    <video id="videoA" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted playsinline autoplay></video>
   </div>
-</section>
+</div>
 
 <div id="enterGate" role="button" aria-label="اضغط للدخول">
   <div class="gate-inner">
@@ -136,61 +85,14 @@
 </div>
 <div id="fadeOut"></div>
 
-<!-- B: horizontal 3D work strip -->
-<section class="scene" id="sceneB" data-bg="#0D0620">
-  <div class="stage">
-    <h1 class="scene-title" id="titleB">آخر الأعمال<small>الشريط بيمشي مع السكرول</small></h1>
-    <div id="trackB">
-      <figure class="wcard"><video src="1-coffee-before-after.mp4" poster="2-coffee-before-after-poster.jpg" muted loop playsinline autoplay></video><figcaption>قهوة — قبل وبعد</figcaption></figure>
-      <figure class="wcard"><video src="5-vxw1.mp4" poster="posters/5-vxw1.jpg" muted loop playsinline autoplay></video><figcaption>ريل براند</figcaption></figure>
-      <figure class="wcard"><video src="6-vxw2.mp4" poster="posters/6-vxw2.jpg" muted loop playsinline autoplay></video><figcaption>موشن</figcaption></figure>
-      <figure class="wcard"><video src="7-vxw3.mp4" poster="posters/7-vxw3.jpg" muted loop playsinline autoplay></video><figcaption>إعلان</figcaption></figure>
-      <figure class="wcard"><video src="8-vxw4.mp4" poster="posters/8-vxw4.jpg" muted loop playsinline autoplay></video><figcaption>ريل عيادة</figcaption></figure>
-    </div>
-  </div>
-</section>
-
-<!-- E: hero-scroll poster scatter -->
-<section class="scene" id="sceneE" data-bg="#08081A">
-  <div class="stage">
-    <div id="scatterE"></div>
-    <h1 id="titleE">كل فريم محسوب<small>الشغل بيتفرّق ويكشف العنوان</small></h1>
-  </div>
-</section>
-
-<!-- D: CTA -->
-<section class="scene" id="sceneD" data-bg="#06070F">
-  <div class="stage">
-    <div class="cta-box">
-      <div class="cta-giant" id="giantD">VEX</div>
-      <a class="cta-btn" href="./#contact">ابدأ مشروعك</a>
-      <a class="cta-btn cta-ghost" href="./">شوف الأعمال ←</a>
-    </div>
-  </div>
-</section>
-
 <script>
-"use strict";
-const scenes = [...document.querySelectorAll(".scene")];
-let vh = innerHeight;
-addEventListener("resize", () => { vh = innerHeight; }, { passive: true });
-
-function progressOf(el) {
-  const r = el.getBoundingClientRect();
-  const total = r.height - vh;
-  if (total <= 0) return 0;
-  return Math.min(1, Math.max(0, -r.top / total));
-}
-const clamp01 = v => Math.min(1, Math.max(0, v));
-
-const titleA = document.getElementById("titleA");
 const videoA = document.getElementById("videoA");
+const videoWrapA = document.getElementById("videoWrapA");
 const enterGate = document.getElementById("enterGate"), fadeOut = document.getElementById("fadeOut");
 
 // Sound without a button: try unmuted autoplay (works with high Media Engagement),
 // otherwise hold on a cinematic enter gate; the first tap starts the intro with sound.
 let introStarted = false;
-const videoWrapA = document.getElementById("videoWrapA");
 async function beginIntro(withSound) {
   introStarted = true;
   enterGate.classList.remove("show");
@@ -218,111 +120,17 @@ async function beginIntro(withSound) {
     videoA.muted = true;
     videoA.pause();
     enterGate.classList.add("show");
-    document.body.style.overflow = "hidden";
-    enterGate.addEventListener("pointerdown", () => {
-      document.body.style.overflow = "";
-      beginIntro(true);
-    }, { once: true });
+    enterGate.addEventListener("pointerdown", () => beginIntro(true), { once: true });
   }
 })();
 
-// When the intro ends, fade out and bring up the site - no extra click.
+// When the intro ends, fade out and bring up the site - no extra click, nothing in between.
 videoA.addEventListener("ended", () => {
   try { screen.orientation.unlock(); } catch (e) {}
   if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
   fadeOut.classList.add("show");
   setTimeout(() => { location.assign("./"); }, 850);
 });
-const titleB = document.getElementById("titleB"), trackB = document.getElementById("trackB");
-const giantD = document.getElementById("giantD");
-const sceneE = document.getElementById("sceneE"), scatterE = document.getElementById("scatterE"), titleE = document.getElementById("titleE");
-const SCARDS = [
-  { img: "1-vxw1.jpg", x: -34, y: -26, r: -10, top: "30%", left: "32%" },
-  { img: "2-vxw2.jpg", x: 34, y: -24, r: 9, top: "28%", left: "68%" },
-  { img: "2-vxw5.jpg", x: -38, y: 6, r: -7, top: "52%", left: "27%" },
-  { img: "3-vxw3.jpg", x: 38, y: 8, r: 8, top: "54%", left: "73%" },
-  { img: "2-vxw6.jpg", x: -28, y: 34, r: -12, top: "72%", left: "36%" },
-  { img: "4-vxw4.jpg", x: 28, y: 36, r: 11, top: "74%", left: "64%" },
-];
-SCARDS.forEach(c => {
-  const d = document.createElement("div");
-  d.className = "scard";
-  d.style.top = c.top; d.style.left = c.left;
-  d.style.transform = "translate(-50%,-50%)";
-  d._dir = { x: c.x, y: c.y, r: c.r };
-  d.innerHTML = `<img src="${c.img}" alt="">`;
-  scatterE.appendChild(d);
-});
-const sceneA = document.getElementById("sceneA"), sceneB = document.getElementById("sceneB"),
-      sceneD = document.getElementById("sceneD");
-const isMobile = innerWidth < 768;
-
-let ticking = false;
-function update() {
-  ticking = false;
-
-  // A: title lifts away over the full-screen intro video
-  const pA = progressOf(sceneA);
-  titleA.style.transform = `translateY(${-110 * pA}px)`;
-  titleA.style.opacity = 1 - pA * 1.15;
-
-  // B: horizontal strip slides, cards tilt in 3D
-  const pB = progressOf(sceneB);
-  const trackW = trackB.scrollWidth;
-  const maxShift = Math.max(0, trackW - innerWidth * 0.82);
-  // RTL page: strip is right-anchored, so move it to the RIGHT (positive X) to reveal
-  trackB.style.transform = `translateX(${maxShift * pB}px)`;
-  [...trackB.children].forEach((c, i) => {
-    const local = clamp01(pB * 1.6 - i * 0.12);
-    c.style.transform = `rotateY(${(1 - local) * -18}deg) translateZ(${local * 30}px)`;
-  });
-  titleB.style.opacity = 1 - clamp01(pB * 1.4) * 0.9;
-
-  // E: posters scatter outward in 3D while the title reveals
-  const pE = progressOf(sceneE);
-  const cards = scatterE.children;
-  for (let i = 0; i < cards.length; i++) {
-    const d = cards[i]._dir;
-    const dist = pE * 1.15;
-    cards[i].style.transform =
-      `translate(-50%,-50%) translate(${d.x * dist}vw, ${d.y * dist}vh) rotateZ(${d.r * pE}deg) translateZ(${-120 * pE}px)`;
-    cards[i].style.opacity = 1 - pE * 0.55;
-  }
-  const reveal = clamp01((pE - 0.18) * 1.8);
-  titleE.style.transform = `scale(${0.7 + reveal * 0.3})`;
-  titleE.style.opacity = reveal;
-
-  // D: outline giant pulses in
-  const pD = progressOf(sceneD);
-  giantD.style.transform = `scale(${0.85 + pD * 0.18})`;
-  giantD.style.opacity = 0.35 + pD * 0.65;
-
-  // background shift: whichever scene owns the viewport middle
-  const mid = vh / 2;
-  for (const s of scenes) {
-    const r = s.getBoundingClientRect();
-    if (r.top <= mid && r.bottom >= mid) {
-      const bg = s.dataset.bg;
-      if (document.body.dataset.bg !== bg) {
-        document.body.dataset.bg = bg;
-        document.body.style.backgroundColor = bg;
-      }
-      break;
-    }
-  }
-}
-addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-// pause offscreen media
-const mediaObserver = new IntersectionObserver((es) => {
-  es.forEach(e => {
-    const v = e.target;
-    if (v === videoA && !introStarted) return;
-    if (e.isIntersecting) { v.play().catch(() => { v.muted = true; v.play().catch(() => {}); }); }
-    else { v.pause(); }
-  });
-}, { threshold: 0.05 });
-document.querySelectorAll(".scene video").forEach(v => mediaObserver.observe(v));
-update();
 </script>
 </body>
 </html>
