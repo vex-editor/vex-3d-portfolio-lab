@@ -273,9 +273,19 @@ import * as THREE from 'three';
   const START = new THREE.Vector3(), look = new THREE.Vector3(), pos = new THREE.Vector3(), tan = new THREE.Vector3();
   let lastTan = new THREE.Vector3(0, 0, -1), roll = 0;
 
+  const DEBUG_TOP = new URLSearchParams(location.search).has('corridor-top');
+
   function frame() {
     requestAnimationFrame(frame);
     if (!inView) return;
+    if (DEBUG_TOP) {
+      scene.fog = null;
+      canvas.style.opacity = 1;
+      camera.position.set(10, 42, -14);
+      camera.lookAt(8, 0, -14);
+      renderer.render(scene, camera);
+      return;
+    }
     const dt = Math.min(clock.getDelta(), 0.05);
     target = regionProgress();
     current += (target - current) * (1 - Math.exp(-dt * 4.5));
