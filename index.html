@@ -711,7 +711,7 @@ function initScene() {
     if (prism) {
       const floatY = Math.sin(t * 1.15) * 0.28;
       prism.position.y = 0.9 + floatY;
-      const targetRotY = -0.35 + pointer.x * 0.55 + t * 0.12;
+      const targetRotY = -0.18 + pointer.x * 0.4 + Math.sin(t * 0.35) * 0.26;
       const targetRotX = -pointer.y * 0.32;
       prism.rotation.y += (targetRotY - prism.rotation.y) * 0.06;
       prism.rotation.x += (targetRotX - prism.rotation.x) * 0.06;
