@@ -74,7 +74,8 @@ import * as THREE from 'three';
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x06070f);
   scene.fog = new THREE.FogExp2(0x0b0618, 0.034);
-  const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 90);
+  const PORTRAIT = innerWidth < innerHeight;
+  const camera = new THREE.PerspectiveCamera(PORTRAIT ? 88 : 62, innerWidth / innerHeight, 0.1, 90);
 
   scene.add(new THREE.AmbientLight(0x9a7bd8, 1.0));
   scene.add(new THREE.HemisphereLight(0x4a3a80, 0x0a0a18, 0.5));
@@ -222,10 +223,11 @@ import * as THREE from 'three';
     plate.position.y = H / 2 + 0.55;
 
     group.add(halo, frame, screen, plate);
-    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 0.5)));
+    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 1.1)));
     group.position.set(wallPoint.x, 0.35, wallPoint.z);
-    /* angle the panel toward the approaching visitor, like a gallery stand */
-    group.lookAt(p.clone().add(nor.clone().multiplyScalar(-side * (HALF_W + 2))).sub(tan.clone().multiplyScalar(2.2)).setY(0.35));
+    /* face the spot where the visitor stands when the panel is the nearest one */
+    const stand = curve.getPointAt(Math.max(0.001, u - 0.07));
+    group.lookAt(stand.setY(0.35));
     /* purple light strip above the panel */
     const strip = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.4, 0.07), new THREE.MeshBasicMaterial({ color: 0xb07cff, side: THREE.DoubleSide }));
     strip.position.y = H / 2 + 0.25;
