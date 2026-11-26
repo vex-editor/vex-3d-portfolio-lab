@@ -38,10 +38,8 @@
   #videoWrapA {
     position:relative; width:100vw; aspect-ratio:16/9; overflow:hidden; background:#06070F;
   }
-  #videoWrapA video { width:100%; height:100%; object-fit:cover; display:block; }
-  @media (max-width:767px) {
-    #videoWrapA { aspect-ratio:auto; height:100svh; }
-  }
+  #videoWrapA video { width:100%; height:100%; object-fit:contain; display:block; }
+  #videoWrapA:fullscreen { width:100%; height:100%; aspect-ratio:auto; background:#000; }
   #titleA { text-shadow:0 4px 30px rgba(6,7,15,.85), 0 1px 8px rgba(6,7,15,.6); }
   /* Enter gate: shown only when unmuted autoplay is blocked */
   #enterGate {
@@ -192,9 +190,21 @@ const enterGate = document.getElementById("enterGate"), fadeOut = document.getEl
 // Sound without a button: try unmuted autoplay (works with high Media Engagement),
 // otherwise hold on a cinematic enter gate; the first tap starts the intro with sound.
 let introStarted = false;
-function beginIntro(withSound) {
+const videoWrapA = document.getElementById("videoWrapA");
+async function beginIntro(withSound) {
   introStarted = true;
   enterGate.classList.remove("show");
+  const portraitPhone = matchMedia("(max-width: 767px) and (orientation: portrait)").matches;
+  if (portraitPhone) {
+    try {
+      if (videoWrapA.requestFullscreen) {
+        await videoWrapA.requestFullscreen();
+        try { await screen.orientation.lock("landscape"); } catch (e) {}
+      } else if (videoA.webkitEnterFullscreen) {
+        videoA.webkitEnterFullscreen(); // iOS: native fullscreen player, uncropped
+      }
+    } catch (e) {}
+  }
   videoA.muted = !withSound;
   videoA.currentTime = 0;
   videoA.play().catch(() => { videoA.muted = true; videoA.play().catch(() => {}); });
@@ -218,6 +228,8 @@ function beginIntro(withSound) {
 
 // When the intro ends, fade out and bring up the site - no extra click.
 videoA.addEventListener("ended", () => {
+  try { screen.orientation.unlock(); } catch (e) {}
+  if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
   fadeOut.classList.add("show");
   setTimeout(() => { location.assign("./"); }, 850);
 });
