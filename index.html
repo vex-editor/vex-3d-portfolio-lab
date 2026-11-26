@@ -931,8 +931,9 @@ function runIntro(onDone) {
     setTimeout(() => intro.classList.add("intro-gone"), 650);
   }
   intro.addEventListener("click", finish, { once: true });
-  function tick(now) {
+  function tick() {
     if (finished) return;
+    const now = performance.now(); // wall clock: rAF timestamps lag on slow renderers
     const p = Math.min(Math.max((now - t0) / (EXIT_AT - 120), 0), 1);
     const eased = 1 - Math.pow(1 - p, 2);
     if (fill) fill.style.width = (eased * 100).toFixed(1) + "%";
