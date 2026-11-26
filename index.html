@@ -180,6 +180,16 @@
   .coverflow-arrow:hover { background:rgba(139,61,255,.25); border-color:var(--purple-bright); transform:translateY(-2px); }
   /* Focus visible */
   :focus-visible { outline:2px solid var(--purple-bright); outline-offset:4px; }
+
+  /* Intro overlay: full-screen, uncropped intro video with sound, triggered by hero buttons */
+  #introOverlay {
+    position:fixed; inset:0; z-index:200; display:none; place-items:center; background:#000;
+  }
+  #introOverlay.show { display:grid; }
+  #introOverlay.fading { transition:opacity .8s ease; opacity:0; }
+  #introOverlay .wrap { position:relative; width:100vw; aspect-ratio:16/9; overflow:hidden; background:#000; }
+  #introOverlay:fullscreen .wrap { width:100%; height:100%; aspect-ratio:auto; }
+  #introOverlay video { width:100%; height:100%; object-fit:contain; display:block; }
 </style>
 </head>
 <body>
@@ -212,8 +222,8 @@
     <h1 id="hero-title"><span class="grad">مونتاجك<br>بإيقاع محسوب</span></h1>
     <p class="hero-sub">مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.</p>
     <div class="hero-actions">
-      <a href="https://wa.me/201558077266?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B+VEX+%F0%9F%91%8B+%D8%B9%D8%A7%D9%8A%D8%B2+%D8%A3%D8%B7%D9%84%D8%A8+%D8%B1%D9%8A%D9%84+%D9%84%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9+%D8%A8%D8%B5%D8%B1%D9%8A%D8%A9+%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9" class="btn btn-primary btn-big" id="hero-cta" target="_blank" rel="noopener">ابدأ مشروعك</a>
-      <a href="#works" class="btn btn-ghost" id="hero-works-cta">شوف الأعمال</a>
+      <a href="https://wa.me/201558077266?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B+VEX+%F0%9F%91%8B+%D8%B9%D8%A7%D9%8A%D8%B2+%D8%A3%D8%B7%D9%84%D8%A8+%D8%B1%D9%8A%D9%84+%D9%84%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9+%D8%A8%D8%B5%D8%B1%D9%8A%D8%A9+%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9" class="btn btn-primary btn-big" id="hero-cta" target="_blank" rel="noopener">ابدأ الآن</a>
+      <a href="#works" class="btn btn-ghost" id="hero-works-cta">شوف الشغل</a>
     </div>
   </section>
   <div class="marquee" aria-hidden="true">
@@ -406,7 +416,7 @@ function updateDynamicText() {
     if (nichesTitle) nichesTitle.innerHTML = 'Playlists<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'About <span class="dot">VEX</span>';
     document.querySelector(".hero-kicker .kicker-text").textContent = "Your Editing";
-    document.getElementById("hero-cta").textContent = "Start Your Project";
+    document.getElementById("hero-cta").textContent = "Start Now";
     document.getElementById("hero-works-cta").textContent = "See the Work";
     document.querySelector(".works-header .btn-ghost").textContent = "All Playlists ↓";
     document.querySelectorAll(".about-card h3")[0].textContent = "Calculated Rhythm";
@@ -422,8 +432,8 @@ function updateDynamicText() {
     if (nichesTitle) nichesTitle.innerHTML = 'البلاي ليستات<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'عن <span class="dot">VEX</span>';
     document.querySelector(".hero-kicker .kicker-text").textContent = "مونتاجك";
-    document.getElementById("hero-cta").textContent = "ابدأ مشروعك";
-    document.getElementById("hero-works-cta").textContent = "شوف الأعمال";
+    document.getElementById("hero-cta").textContent = "ابدأ الآن";
+    document.getElementById("hero-works-cta").textContent = "شوف الشغل";
     document.querySelector(".works-header .btn-ghost").textContent = "كل البلاي ليستات ↓";
     document.querySelectorAll(".about-card h3")[0].textContent = "إيقاع محسوب";
     document.querySelectorAll(".about-card p")[0].textContent = "كل قطّة وكل انتقال بيخدم القصة. مفيش حشو، مفيش حركات عشوائية — بس مونتاج بيخدم الرسالة ويوصلها بأقصر طريق.";
@@ -1083,5 +1093,10 @@ document.addEventListener("DOMContentLoaded", () => {
   Promise.all([loadWorks(), loadPlaylists(), loadLinks()]);
 });
 </script>
+<div id="introOverlay" aria-hidden="true">
+  <div class="wrap">
+    <video id="introVideo" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted playsinline></video>
+  </div>
+</div>
 </body>
 </html>
