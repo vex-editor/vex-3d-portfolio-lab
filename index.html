@@ -61,12 +61,8 @@
   /* Hero */
   .hero { min-height:100svh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:140px 6vw 80px; }
   .hero-kicker { color:var(--purple-bright); letter-spacing:4px; font-size:.8rem; font-weight:700; margin-bottom:18px; }
-  .hero h1 { font-size:clamp(2.4rem, 8vw, 5.5rem); font-weight:900; line-height:1.45; text-shadow:0 4px 32px rgba(6,7,15,.9), 0 0 16px rgba(6,7,15,.7); }
-  .grad { background:linear-gradient(115deg,#ffffff 10%,#e6dcff 40%,#b99aff 75%,#8b3dff); -webkit-background-clip:text; background-clip:text; color:transparent; padding-bottom:.16em; margin-bottom:-.16em; display:inline-block; }
-  .hero h1 .h-line { display:block; }
-  .hero h1 .h-word, .hero h1 .h-letter { position:relative; }
-  .hero h1 .h-ghost { position:absolute; left:0; top:0; z-index:0; pointer-events:none; color:#3d1e7a; text-shadow:0 1px 0 #361a6c, 0 2px 0 #2e165d, 0 3px 0 #271350, 0 4px 0 #201043, 0 8px 20px rgba(4,5,12,.8); }
-  .hero h1 .h-face { position:relative; z-index:1; }
+  .hero h1 { font-size:clamp(2.4rem, 8vw, 5.5rem); font-weight:900; line-height:1.2; text-shadow:0 4px 32px rgba(6,7,15,.9), 0 0 16px rgba(6,7,15,.7); }
+  .grad { background:linear-gradient(115deg,#ffffff 10%,#e6dcff 40%,#b99aff 75%,#8b3dff); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero-sub { color:var(--muted); font-size:clamp(1rem, 2.4vw, 1.3rem); max-width:560px; margin:22px auto 34px; text-shadow:0 2px 14px rgba(6,7,15,.9); }
   .hero-actions { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
   .scroll-hint { margin-top:48px; color:var(--muted); font-size:.85rem; opacity:.7; animation:float 3s ease-in-out infinite; }
@@ -209,7 +205,7 @@
 <main>
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-kicker"><span class="kicker-dot" aria-hidden="true"></span><span class="kicker-text">مونتاجك</span></div>
-    <h1 id="hero-title"><span class="h-line"><span class="h-word"><span class="h-ghost" aria-hidden="true">مونتاجك</span><span class="h-face grad">مونتاجك</span></span></span><span class="h-line"><span class="h-word"><span class="h-ghost" aria-hidden="true">بإيقاع</span><span class="h-face grad">بإيقاع</span></span> <span class="h-word"><span class="h-ghost" aria-hidden="true">محسوب</span><span class="h-face grad">محسوب</span></span></span></h1>
+    <h1 id="hero-title"><span class="grad">مونتاجك<br>بإيقاع محسوب</span></h1>
     <p class="hero-sub">مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.</p>
     <div class="hero-actions">
       <a href="https://wa.me/201558077266?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B+VEX+%F0%9F%91%8B+%D8%B9%D8%A7%D9%8A%D8%B2+%D8%A3%D8%B7%D9%84%D8%A8+%D8%B1%D9%8A%D9%84+%D9%84%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9+%D8%A8%D8%B5%D8%B1%D9%8A%D8%A9+%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9" class="btn btn-primary btn-big" id="hero-cta" target="_blank" rel="noopener">ابدأ مشروعك</a>
@@ -348,91 +344,30 @@ langToggle?.addEventListener("click", () => {
   updateDynamicText();
 });
 
-// ================= Interactive 3D Headline =================
-// Per-word spans for AR (splitting letters would break Arabic letter joining),
-// per-letter for EN. Gradient is painted line-wide via background offsets so it
-// matches the original pre-rebuild look exactly.
-function buildHeadline(lines, perLetter) {
+// ================= Interactive headline (original f0ad4eb look) =================
+// The headline is EXACTLY the original site's: one .grad span, same font, weight,
+// size, line-height, gradient and halo. Interactivity never changes that rest
+// look: the pointer only pans the gradient and shifts the soft halo slightly.
+function headlineMarkup() {
+  return currentLang === "en"
+    ? '<span class="grad">Your Editing<br>With Calculated Rhythm</span>'
+    : '<span class="grad">\u0645\u0648\u0646\u062a\u0627\u062c\u0643<br>\u0628\u0625\u064a\u0642\u0627\u0639 \u0645\u062d\u0633\u0648\u0628</span>';
+}
+
+function initHeadlineInteractive() {
   const h1 = document.getElementById("hero-title");
-  if (!h1) return;
-  h1.innerHTML = "";
-  lines.forEach((line) => {
-    const lineEl = document.createElement("span");
-    lineEl.className = "h-line";
-    const makeUnit = (txt, cls) => {
-      const u = document.createElement("span");
-      u.className = cls;
-      const g = document.createElement("span");
-      g.className = "h-ghost";
-      g.setAttribute("aria-hidden", "true");
-      g.textContent = txt;
-      const f = document.createElement("span");
-      f.className = "h-face grad";
-      f.textContent = txt;
-      u.appendChild(g);
-      u.appendChild(f);
-      return u;
-    };
-    if (perLetter) {
-      for (const ch of line) {
-        if (ch === " ") { lineEl.appendChild(document.createTextNode(" ")); continue; }
-        lineEl.appendChild(makeUnit(ch, "h-letter"));
-      }
-    } else {
-      line.split(" ").forEach((w, i) => {
-        if (i) lineEl.appendChild(document.createTextNode(" "));
-        lineEl.appendChild(makeUnit(w, "h-word"));
-      });
-    }
-    h1.appendChild(lineEl);
-  });
-  paintHeadlineGradient(h1);
-  initHeadline3D(h1);
-}
-
-function paintHeadlineGradient(h1) {
-  // Old-site look: ONE continuous gradient spanning the whole headline.
-  // Each unit samples its slice of the h1-wide gradient via size/position.
-  h1 = h1 || document.getElementById("hero-title");
-  if (!h1) return;
-  const units = Array.from(h1.querySelectorAll(".grad"));
-  if (!units.length) return;
-  // Per-unit full sweep: each word/letter paints the complete 115deg gradient
-  // over its own box (old-site effect, no measurement, immune to font swap/resize).
-  units.forEach((u) => { u.style.backgroundSize = ""; u.style.backgroundPosition = ""; });
-}
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => paintHeadlineGradient());
-}
-let __hgResizeT;
-window.addEventListener("resize", () => {
-  clearTimeout(__hgResizeT);
-  __hgResizeT = setTimeout(() => paintHeadlineGradient(), 180);
-});
-
-function initHeadline3D(h1) {
   if (!h1 || reducedMotion) return;
-  const units = h1.querySelectorAll(".h-word, .h-letter");
-  if (!units.length) return;
   const hero = h1.closest(".hero") || h1.parentElement;
   let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
-  // Pointer-reactive 3D: each unit's solid-color ghost (the extrusion layer behind
-  // the gradient face) leans with the pointer, so the headline reads as solid 3D
-  // type following the hand. The gradient face itself never gets a transform or an
-  // opaque shadow: both blank background-clip:text faces in Chrome.
-  const ghosts = Array.from(units).map((u) => u.querySelector(".h-ghost"));
   function apply() {
     raf = null;
-    cx += (tx - cx) * 0.14;
-    cy += (ty - cy) * 0.14;
-    const n = ghosts.length;
-    ghosts.forEach((g, i) => {
-      if (!g) return;
-      const phase = n > 1 ? i / (n - 1) - 0.5 : 0; // -0.5..0.5 across the headline
-      const lean = cx * (2 + Math.abs(phase) * 6) * (phase >= 0 ? 1 : -1);
-      const drop = cy * (1.5 + Math.abs(phase) * 3);
-      g.style.transform = "translate(" + lean.toFixed(2) + "px," + (2 + drop).toFixed(2) + "px)";
-    });
+    cx += (tx - cx) * 0.12;
+    cy += (ty - cy) * 0.12;
+    const g = h1.querySelector(".grad");
+    if (g) g.style.backgroundPosition = (cx * 22).toFixed(1) + "px " + (cy * 14).toFixed(1) + "px";
+    h1.style.textShadow =
+      (cx * 8).toFixed(1) + "px " + (4 + cy * 6).toFixed(1) + "px 32px rgba(6,7,15,.9), " +
+      (cx * 4).toFixed(1) + "px " + (cy * 3).toFixed(1) + "px 16px rgba(6,7,15,.7)";
     if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) raf = requestAnimationFrame(apply);
   }
   function onMove(e) {
@@ -447,7 +382,6 @@ function initHeadline3D(h1) {
     tx = 0; ty = 0;
     if (!raf) raf = requestAnimationFrame(apply);
   });
-  apply();
 }
 
 function updateDynamicText() {
@@ -456,7 +390,7 @@ function updateDynamicText() {
   const worksTitle = document.getElementById("works-title");
   const aboutTitle = document.getElementById("about-title");
   if (currentLang === "en") {
-    if (heroTitle) buildHeadline(["Your Editing", "With Calculated Rhythm"], true);
+    if (heroTitle) heroTitle.innerHTML = headlineMarkup();
     if (heroSub) heroSub.textContent = "Not just video — it's an experience. Every cut, every transition, every color — calculated to serve the message.";
     if (worksTitle) worksTitle.innerHTML = 'My <span class="dot">.</span>Work';
     if (aboutTitle) aboutTitle.innerHTML = 'About <span class="dot">VEX</span>';
@@ -472,7 +406,7 @@ function updateDynamicText() {
     document.querySelectorAll(".about-card h3")[2].textContent = "Clean Delivery";
     document.querySelectorAll(".about-card p")[2].textContent = "Organized files, clear naming, assets ready for revision. Pick up the project tomorrow without hunting for a lost layer.";
   } else {
-    if (heroTitle) buildHeadline(["مونتاجك", "بإيقاع محسوب"], false);
+    if (heroTitle) heroTitle.innerHTML = headlineMarkup();
     if (heroSub) heroSub.textContent = "مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.";
     if (worksTitle) worksTitle.innerHTML = 'أعمالي<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'عن <span class="dot">VEX</span>';
@@ -1166,7 +1100,7 @@ function initCoverflowFX() {
 
 // ================= Boot =================
 document.addEventListener("DOMContentLoaded", () => {
-  buildHeadline(currentLang === "en" ? ["Your Editing", "With Calculated Rhythm"] : ["مونتاجك", "بإيقاع محسوب"], currentLang === "en");
+  initHeadlineInteractive();
   runIntro(() => initHeroEntrance());
   initScrollUI();
   initMarquee();
