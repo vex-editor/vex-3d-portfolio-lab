@@ -396,8 +396,13 @@ function paintHeadlineGradient(h1) {
   units.forEach((u, i) => {
     const r = u.getBoundingClientRect();
     u.style.backgroundSize = base.width + "px " + base.height + "px";
+    // Mirror the vertical sampling: the old single-span render reads purple at the
+    // top line and white at the bottom line, so bottom units sample the top (white)
+    // end of the gradient and top units the purple end.
+    const dyTop = r.top - base.top;
+    const mirroredY = base.height - dyTop - r.height;
     u.style.backgroundPosition =
-      "-" + (r.left - base.left).toFixed(1) + "px -" + (r.top - base.top).toFixed(1) + "px";
+      "-" + (r.left - base.left).toFixed(1) + "px -" + mirroredY.toFixed(1) + "px";
     u.style.transform = saved[i];
   });
 }
