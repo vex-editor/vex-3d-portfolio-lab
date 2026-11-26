@@ -1098,5 +1098,61 @@ document.addEventListener("DOMContentLoaded", () => {
     <video id="introVideo" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted playsinline></video>
   </div>
 </div>
+
+<script>
+// ================= Intro overlay (full-screen, uncropped, with sound) =================
+// Either hero button is the user gesture that starts the intro video with sound.
+// When it ends, the overlay fades out straight back to this landing - nothing in between.
+// After the intro has played once this session, the buttons do their normal action.
+(function () {
+  const overlay = document.getElementById("introOverlay");
+  const video = document.getElementById("introVideo");
+  const cta = document.getElementById("hero-cta");
+  const works = document.getElementById("hero-works-cta");
+  let playing = false;
+
+  async function playIntro(e) {
+    e.preventDefault();
+    if (playing) return;
+    playing = true;
+    overlay.classList.add("show");
+    const portraitPhone = matchMedia("(max-width: 767px) and (orientation: portrait)").matches;
+    if (portraitPhone) {
+      try {
+        if (overlay.requestFullscreen) {
+          await overlay.requestFullscreen();
+          try { await screen.orientation.lock("landscape"); } catch (_) {}
+        } else if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen(); // iOS native fullscreen player, uncropped
+        }
+      } catch (_) {}
+    }
+    video.muted = false;
+    video.currentTime = 0;
+    video.play().catch(() => { video.muted = true; video.play().catch(() => {}); });
+  }
+
+  function closeIntro() {
+    try { screen.orientation.unlock(); } catch (_) {}
+    if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
+    overlay.classList.add("fading");
+    setTimeout(() => {
+      overlay.classList.remove("show", "fading");
+      video.pause();
+      playing = false;
+      try { sessionStorage.setItem("vexIntroPlayed", "1"); } catch (_) {}
+    }, 820);
+  }
+
+  video.addEventListener("ended", closeIntro);
+  function maybePlay(e) {
+    let seen = null;
+    try { seen = sessionStorage.getItem("vexIntroPlayed"); } catch (_) {}
+    if (!seen) playIntro(e);
+  }
+  if (cta) cta.addEventListener("click", maybePlay);
+  if (works) works.addEventListener("click", maybePlay);
+})();
+</script>
 </body>
 </html>
