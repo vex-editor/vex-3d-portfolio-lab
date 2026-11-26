@@ -310,7 +310,7 @@ function fillRow(id, imgs) {
   [...imgs, ...imgs].forEach(src => {
     const d = document.createElement("div");
     d.className = "mcard";
-    d.innerHTML = `<img src="${src}" alt="" loading="lazy">`;
+    d.innerHTML = `<img src="${src}" alt="">`;
     track.appendChild(d);
   });
   row.appendChild(track);
