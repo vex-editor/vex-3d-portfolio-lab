@@ -41,6 +41,13 @@
     transform-origin:center 60%; will-change:transform; background:#0B0D1A;
   }
   #cardA video { width:100%; height:100%; object-fit:cover; display:block; }
+  #cardA { position:relative; }
+  #soundA {
+    position:absolute; bottom:14px; inset-inline-end:14px; z-index:4;
+    padding:8px 14px; border-radius:999px; border:1px solid var(--border);
+    background:rgba(6,7,15,.72); color:var(--fg); font:inherit; font-size:.8rem;
+    backdrop-filter:blur(8px); cursor:pointer;
+  }
 
   /* Scene B: horizontal 3D work strip */
   #sceneB { height:320vh; }
@@ -106,7 +113,8 @@
   <div class="stage">
     <h1 class="scene-title" id="titleA">الشغل اللي بيتشاف<small>انزل تحت — الكارت بيفتح معاك</small></h1>
     <div id="cardA">
-      <video src="1-vex-motion.mp4" poster="posters/sceneA.jpg" preload="auto" muted loop playsinline autoplay></video>
+      <video id="videoA" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted loop playsinline autoplay></video>
+      <button id="soundA" type="button" aria-label="تشغيل الصوت">🔇 شغّل الصوت</button>
     </div>
   </div>
 </section>
@@ -159,6 +167,13 @@ function progressOf(el) {
 const clamp01 = v => Math.min(1, Math.max(0, v));
 
 const titleA = document.getElementById("titleA"), cardA = document.getElementById("cardA");
+const videoA = document.getElementById("videoA"), soundA = document.getElementById("soundA");
+soundA.addEventListener("click", () => {
+  videoA.muted = !videoA.muted;
+  if (!videoA.muted) videoA.play();
+  soundA.textContent = videoA.muted ? "🔇 شغّل الصوت" : "🔊 اكتم الصوت";
+  soundA.setAttribute("aria-label", videoA.muted ? "تشغيل الصوت" : "كتم الصوت");
+});
 const titleB = document.getElementById("titleB"), trackB = document.getElementById("trackB");
 const giantD = document.getElementById("giantD");
 const sceneE = document.getElementById("sceneE"), scatterE = document.getElementById("scatterE"), titleE = document.getElementById("titleE");
