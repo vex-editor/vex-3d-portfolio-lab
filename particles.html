@@ -186,7 +186,7 @@ function buildParticles(img) {
       const hx = ox + x * scale, hy = oy + y * scale;
       particles.push({
         hx, hy, x: hx, y: hy, vx: 0, vy: 0,
-        c: `rgb(${data[i]},${data[i+1]},${data[i+2]})`,
+        c: `rgb(${Math.min(255, data[i] * 1.9 + 26) | 0},${Math.min(255, data[i+1] * 1.9 + 22) | 0},${Math.min(255, data[i+2] * 1.9 + 34) | 0})`,
         s: dot * (0.8 + Math.random() * 0.4),
         seed: Math.random() * Math.PI * 2
       });
