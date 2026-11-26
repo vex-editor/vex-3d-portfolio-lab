@@ -723,6 +723,7 @@ function initScene() {
       prismShadow.material.opacity = 0.85 - lift * 0.35;
       const shScale = 4.2 - lift * 0.9;
       prismShadow.scale.set(shScale, shScale * 0.45, 1);
+      window.__dbg = { mob: isMobile, rotY: +prism.rotation.y.toFixed(2), rotX: +prism.rotation.x.toFixed(2), s: +prism.scale.y.toFixed(2), py: +prism.position.y.toFixed(2), envOk: !!scene.environment, dpr: renderer.getPixelRatio(), w: innerWidth, t: +t.toFixed(1) };
     }
 
     // Rings: 4x speed during intro, easing to 1x
