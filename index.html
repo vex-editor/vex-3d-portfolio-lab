@@ -623,7 +623,7 @@ function initScene() {
   const prism = new THREE.Mesh(prismGeo, prismMat);
   prism.position.set(0, 0.9, 2.2);
   prism.rotation.y = -0.35;
-  prism.scale.setScalar(isMobile ? 1.25 : 1.9);
+  prism.scale.setScalar(isMobile ? 1.55 : 1.9);
   heroGroup.add(prism);
 
   // soft fake contact shadow under the prism
@@ -645,6 +645,9 @@ function initScene() {
   const prismKey = new THREE.DirectionalLight(0xfff1e0, 2.2);
   prismKey.position.set(4, 6, 7);
   scene.add(prismKey);
+  const prismFill = new THREE.DirectionalLight(0x9a6bff, 0.9);
+  prismFill.position.set(-4, -1, 6);
+  scene.add(prismFill);
 
   // Interaction
   let dragging = false, lastX = 0, lastY = 0, rotY = 0, rotX = 0, rotVel = 0, rotXVel = 0;
@@ -713,8 +716,8 @@ function initScene() {
       prism.rotation.y += (targetRotY - prism.rotation.y) * 0.06;
       prism.rotation.x += (targetRotX - prism.rotation.x) * 0.06;
       const wob = Math.sin(t * 2.1);
-      prism.scale.y = (isMobile ? 1.25 : 1.9) * (1 + wob * 0.045);
-      prism.scale.x = prism.scale.z = (isMobile ? 1.25 : 1.9) * (1 - wob * 0.03);
+      prism.scale.y = (isMobile ? 1.55 : 1.9) * (1 + wob * 0.045);
+      prism.scale.x = prism.scale.z = (isMobile ? 1.55 : 1.9) * (1 - wob * 0.03);
       // contact shadow tracks the float
       const lift = (floatY + 0.28) / 0.56; // 0..1
       prismShadow.material.opacity = 0.85 - lift * 0.35;
