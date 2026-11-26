@@ -23,3 +23,13 @@ PLAN-READY
 - Stats strip: big numbers with purple icon chips (for VEX: works count, playlists, years).
 - About section: text + photo/card layout.
 - Client logo strip: SKIP (VEX has none).
+
+## ANIMATIONS/INTERACTIONS from Manova video (frame-by-frame, 47 frames @2fps) — replicate each:
+1. HERO ENTRANCE: staggered blur-in + fade-up. Headline first (blur→sharp), then portrait/logo, then the small chip CTA. ~0.6s apart.
+2. WORKS COVERFLOW: draggable 3D carousel. Cards in perspective: center card scales up and faces forward, side cards rotateY-tilt away and shrink/dim. Drag with momentum glide; fast drag makes cards fly/flip through the carousel. Hover on center card plays video preview (existing vex-player behavior).
+3. 3D CENTERPIECE: floating object (VEX: rings orbiting the VEX word, purple-lit glossy) with slow idle rotation + drag-to-rotate; small purple glowing orbs orbit around it.
+4. SCROLL TRANSITIONS: each section (about, stats) fades + slides up when it enters the viewport (IntersectionObserver, translateY(30px)→0, opacity 0→1, ease-out ~0.7s).
+5. STATS COUNT-UP: three cards with purple icon chips pop in staggered; numbers count up from 0 to final (e.g. +10/+800/+1000 style) when scrolled into view.
+6. AMBIENT GLOW: fixed violet radial glow at top center of viewport, subtle slow pulse; page background near-black #05060d.
+7. NAV: sticky top bar, section links + WhatsApp CTA chip.
+NOT VISIBLE IN VIDEO (say plainly if asked): exact easing/timing values (360p recording, approximated), any custom cursor (not discernible), the 3D open-book model itself (VEX keeps its rings instead).
