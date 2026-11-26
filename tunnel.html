@@ -115,8 +115,9 @@ scene.add(grid);
 const PANEL_SPACING = 7;
 const panels = [];
 const glassMat = new THREE.MeshPhysicalMaterial({
-  color: 0xb07cff, transparent: true, opacity: 0.10,
-  roughness: 0.05, metalness: 0.1, side: THREE.DoubleSide,
+  color: 0xb07cff, transparent: true, opacity: 0.07,
+  roughness: 0.35, metalness: 0.1, side: THREE.DoubleSide,
+  envMapIntensity: 0.2, specularIntensity: 0.3,
 });
 const frameMat = new THREE.MeshBasicMaterial({ color: 0x8b3dff, transparent: true, opacity: .8, wireframe: true });
 
@@ -136,7 +137,7 @@ for (let i = 0; i < 12; i++) {
     new THREE.MeshBasicMaterial({ map: tex })
   );
 
-  const glass = new THREE.Mesh(new THREE.PlaneGeometry(3.9, 3.0), glassMat);
+  const glass = new THREE.Mesh(new THREE.PlaneGeometry(3.42, 2.57), glassMat);
   glass.position.z = 0.03;
 
   const frame = new THREE.Mesh(new THREE.PlaneGeometry(3.95, 3.05), frameMat);

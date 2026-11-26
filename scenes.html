@@ -93,7 +93,6 @@
   }
   .cta-btn:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 20px 60px rgba(139,61,255,.6); }
 
-  .scroll-hint { position:absolute; bottom:26px; inset-inline:0; text-align:center; color:var(--muted); font-size:.75rem; z-index:3; }
 </style>
 </head>
 <body>
@@ -114,7 +113,6 @@
     <div id="cardA">
       <video src="1-vex-motion.mp4" poster="4-vex-motion-poster.jpg" muted loop playsinline autoplay></video>
     </div>
-    <div class="scroll-hint">↓ اسكرول</div>
   </div>
 </section>
 
@@ -124,10 +122,10 @@
     <h1 class="scene-title" id="titleB">آخر الأعمال<small>الشريط بيمشي مع السكرول</small></h1>
     <div id="trackB">
       <figure class="wcard"><video src="1-coffee-before-after.mp4" poster="2-coffee-before-after-poster.jpg" muted loop playsinline autoplay></video><figcaption>قهوة — قبل وبعد</figcaption></figure>
-      <figure class="wcard"><video src="5-vxw1.mp4" muted loop playsinline autoplay></video><figcaption>ريل براند</figcaption></figure>
-      <figure class="wcard"><video src="6-vxw2.mp4" muted loop playsinline autoplay></video><figcaption>موشن</figcaption></figure>
-      <figure class="wcard"><video src="7-vxw3.mp4" muted loop playsinline autoplay></video><figcaption>إعلان</figcaption></figure>
-      <figure class="wcard"><video src="8-vxw4.mp4" muted loop playsinline autoplay></video><figcaption>ريل عيادة</figcaption></figure>
+      <figure class="wcard"><video src="5-vxw1.mp4" poster="posters/5-vxw1.jpg" muted loop playsinline autoplay></video><figcaption>ريل براند</figcaption></figure>
+      <figure class="wcard"><video src="6-vxw2.mp4" poster="posters/6-vxw2.jpg" muted loop playsinline autoplay></video><figcaption>موشن</figcaption></figure>
+      <figure class="wcard"><video src="7-vxw3.mp4" poster="posters/7-vxw3.jpg" muted loop playsinline autoplay></video><figcaption>إعلان</figcaption></figure>
+      <figure class="wcard"><video src="8-vxw4.mp4" poster="posters/8-vxw4.jpg" muted loop playsinline autoplay></video><figcaption>ريل عيادة</figcaption></figure>
     </div>
   </div>
 </section>
@@ -265,6 +263,11 @@ function update() {
   }
 }
 addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+// pause offscreen media
+const mediaObserver = new IntersectionObserver((es) => {
+  es.forEach(e => { const v = e.target; if (e.isIntersecting) { v.play().catch(() => {}); } else { v.pause(); } });
+}, { threshold: 0.05 });
+document.querySelectorAll(".scene video").forEach(v => mediaObserver.observe(v));
 update();
 </script>
 </body>
