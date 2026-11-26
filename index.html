@@ -44,6 +44,7 @@
   .glow-bg { position:fixed; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139,61,255,.25), transparent 60%), radial-gradient(ellipse 40% 30% at 80% 80%, rgba(112,88,212,.15), transparent 50%), var(--bg); }
   /* 3D Canvas */
   #scene { position:fixed; inset:0; width:100%; height:100%; z-index:0; touch-action:pan-y; opacity:.45; }
+  @media (max-width:640px) { #scene { opacity:.25; } }
   main, nav, footer { position:relative; z-index:2; }
   /* Nav */
   .nav { position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; padding:16px 5vw; backdrop-filter:blur(14px); background:rgba(6,7,15,.72); border-bottom:1px solid rgba(139,61,255,.14); z-index:50; }
@@ -372,7 +373,7 @@ function initScene() {
 
   // Hero group: orbiting rings + VEX text
   const heroGroup = new THREE.Group();
-  heroGroup.position.set(0, -0.6, -4); heroGroup.scale.setScalar(0.55);
+  heroGroup.position.set(0, isMobile ? -1.6 : -0.6, isMobile ? -7 : -4); heroGroup.scale.setScalar(isMobile ? 0.3 : 0.55);
   scene.add(heroGroup);
 
   const ringGeo = new THREE.TorusGeometry(3.5, 0.08, 16, 100);
