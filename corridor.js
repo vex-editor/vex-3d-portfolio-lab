@@ -294,8 +294,23 @@ import * as THREE from 'three';
     const u = Math.min(0.9999, Math.max(0.0001, current));
     curve.getPointAt(u, pos);
     curve.getTangentAt(u, tan);
-    camera.position.set(pos.x, 0.1, pos.z);
-    look.copy(pos).add(tan); camera.lookAt(look);
+    camera.position.set(pos.x, 0.3, pos.z);
+    look.copy(pos).addScaledVector(tan, 2.0); look.y = 0.35;
+    /* gaze bias: ease the view toward the wall panel while it is ahead, back to the path after passing */
+    let gp = null, gw = 0;
+    panels.forEach((p) => {
+      const d = p.u - u;
+      if (d > -0.008 && d < 0.06) {
+        const w = Math.sin(Math.PI * (d + 0.008) / 0.068);
+        if (w > gw) { gw = w; gp = p; }
+      }
+    });
+    if (gp) {
+      const w = gw * 0.9;
+      look.x += (gp.group.position.x - look.x) * w;
+      look.z += (gp.group.position.z - look.z) * w;
+    }
+    camera.lookAt(look);
     /* drone banking: roll into turns */
     const turn = lastTan.clone().cross(tan).y;
     roll += ((turn * 14) - roll) * Math.min(1, dt * 5);
