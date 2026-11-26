@@ -73,10 +73,11 @@ import * as THREE from 'three';
   /* ---- scene ---- */
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x06070f);
-  scene.fog = new THREE.FogExp2(0x0b0618, 0.05);
+  scene.fog = new THREE.FogExp2(0x0b0618, 0.034);
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 90);
 
-  scene.add(new THREE.AmbientLight(0x9a7bd8, 0.7));
+  scene.add(new THREE.AmbientLight(0x9a7bd8, 1.0));
+  scene.add(new THREE.HemisphereLight(0x4a3a80, 0x0a0a18, 0.5));
   const key = new THREE.PointLight(0xb07cff, 50, 34); scene.add(key);
 
   /* Corridor path: straight, turn right, straight, turn left, straight out. */
@@ -190,7 +191,7 @@ import * as THREE from 'three';
     const p = curve.getPointAt(u), tan = curve.getTangentAt(u);
     const nor = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
     const group = new THREE.Group();
-    const W = 2.6, H = 3.5; /* 9:16-ish reel frame */
+    const W = 2.9, H = 4.0; /* 9:16-ish reel frame */
 
     const mat = new THREE.MeshBasicMaterial({ map: work.posterTex || placeholderTexture(work.title) });
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(W, H), mat);
@@ -202,9 +203,10 @@ import * as THREE from 'three';
     plate.position.y = H / 2 + 0.55;
 
     group.add(halo, frame, screen, plate);
-    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 0.06)));
+    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 0.28)));
     group.position.set(wallPoint.x, 0.35, wallPoint.z);
-    group.lookAt(p.clone().add(nor.clone().multiplyScalar(-side * 2)).setY(0.35));
+    /* angle the panel toward the approaching visitor, not flat on the wall */
+    group.lookAt(p.clone().add(nor.clone().multiplyScalar(-side * 2)).sub(tan.clone().multiplyScalar(3.2)).setY(0.35));
     scene.add(group);
     panels.push({ u, group, work, mat, video: null, live: false });
   }
@@ -270,8 +272,8 @@ import * as THREE from 'three';
 
     /* captions: nearest panel ahead */
     let best = null, bd = 1;
-    panels.forEach((p) => { const d = p.u - u; if (d > -0.02 && d < bd) { bd = d; best = p; } });
-    const show = best && bd < 0.09 && current > 0.015 && current < 0.985;
+    panels.forEach((p) => { const d = Math.abs(p.u - u); if (d < bd) { bd = d; best = p; } });
+    const show = best && bd < 0.12 && current > 0.015 && current < 0.985;
     capEl.style.opacity = show ? 1 : 0;
     if (show) {
       if (capTitle.textContent !== best.work.title) {
