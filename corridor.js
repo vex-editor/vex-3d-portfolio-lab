@@ -88,10 +88,27 @@ import * as THREE from 'three';
   const curve = new THREE.CatmullRomCurve3(pts2.map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'catmullrom', 0.35);
   const HALF_W = 3.1, WALL_H = 4.2;
 
+  /* subtle wall texture: seams + dado line, generated once on a canvas */
+  function wallTexture() {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+    const g = c.getContext('2d');
+    const grad = g.createLinearGradient(0, 256, 0, 0);
+    grad.addColorStop(0, '#171a30'); grad.addColorStop(0.35, '#12142a'); grad.addColorStop(1, '#0d0f22');
+    g.fillStyle = grad; g.fillRect(0, 0, 256, 256);
+    g.strokeStyle = 'rgba(139,61,255,.28)'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(0, 168); g.lineTo(256, 168); g.stroke(); /* dado rail */
+    g.strokeStyle = 'rgba(255,255,255,.05)'; g.lineWidth = 1;
+    for (let x = 0; x <= 256; x += 64) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, 256); g.stroke(); }
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+  const wallTex = wallTexture();
+
   /* Ribbon geometry builder: floor, ceiling, left/right walls along the curve */
-  function ribbon(offsetA, offsetB, yA, yB, color, emissive) {
+  function ribbon(offsetA, offsetB, yA, yB, color, opts) {
     const N = 160;
-    const pos = [], idx = [];
+    const pos = [], idx = [], uv = [];
     const p = new THREE.Vector3(), tan = new THREE.Vector3(), nor = new THREE.Vector3();
     for (let i = 0; i <= N; i++) {
       const u = i / N;
@@ -100,19 +117,21 @@ import * as THREE from 'three';
       nor.set(-tan.z, 0, tan.x).normalize(); /* left of travel */
       pos.push(p.x + nor.x * offsetA, yA, p.z + nor.z * offsetA);
       pos.push(p.x + nor.x * offsetB, yB, p.z + nor.z * offsetB);
+      uv.push(u * 24, 0, u * 24, 1);
       if (i < N) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
     g.setIndex(idx);
     g.computeVertexNormals();
-    const m = new THREE.MeshStandardMaterial({ color, roughness: 0.9, metalness: 0.05, emissive: emissive || 0x000000, emissiveIntensity: 0.25, side: THREE.DoubleSide });
+    const m = new THREE.MeshStandardMaterial({ color, roughness: 0.9, metalness: 0.05, map: (opts && opts.map) || null, side: THREE.DoubleSide });
     scene.add(new THREE.Mesh(g, m));
   }
-  ribbon(-HALF_W, HALF_W, -2.1, -2.1, 0x0a0a18);            /* floor */
+  ribbon(-HALF_W, HALF_W, -2.1, -2.1, 0x0e1020);            /* floor */
   ribbon(-HALF_W, HALF_W, WALL_H - 2.1, WALL_H - 2.1, 0x0a0a18); /* ceiling */
-  ribbon(HALF_W, HALF_W, -2.1, WALL_H - 2.1, 0x111224);     /* right wall */
-  ribbon(-HALF_W, -HALF_W, -2.1, WALL_H - 2.1, 0x111224);   /* left wall */
+  ribbon(HALF_W, HALF_W, -2.1, WALL_H - 2.1, 0xffffff, { map: wallTex });     /* right wall */
+  ribbon(-HALF_W, -HALF_W, -2.1, WALL_H - 2.1, 0xffffff, { map: wallTex });   /* left wall */
 
   /* glow rails along floor edges + ceiling center, following the curve */
   function rail(offset, y, color, opacity) {
@@ -191,7 +210,7 @@ import * as THREE from 'three';
     const p = curve.getPointAt(u), tan = curve.getTangentAt(u);
     const nor = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
     const group = new THREE.Group();
-    const W = 2.9, H = 4.0; /* 9:16-ish reel frame */
+    const W = 3.2, H = 4.3; /* 9:16-ish reel frame */
 
     const mat = new THREE.MeshBasicMaterial({ map: work.posterTex || placeholderTexture(work.title), side: THREE.DoubleSide });
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(W, H), mat);
@@ -203,10 +222,14 @@ import * as THREE from 'three';
     plate.position.y = H / 2 + 0.55;
 
     group.add(halo, frame, screen, plate);
-    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 0.28)));
+    const wallPoint = p.clone().add(nor.clone().multiplyScalar(side * (HALF_W - 0.5)));
     group.position.set(wallPoint.x, 0.35, wallPoint.z);
-    /* angle the panel toward the approaching visitor, not flat on the wall */
-    group.lookAt(p.clone().add(nor.clone().multiplyScalar(-side * 2)).sub(tan.clone().multiplyScalar(3.2)).setY(0.35));
+    /* angle the panel toward the approaching visitor, like a gallery stand */
+    group.lookAt(p.clone().add(nor.clone().multiplyScalar(-side * (HALF_W + 2))).sub(tan.clone().multiplyScalar(2.2)).setY(0.35));
+    /* purple light strip above the panel */
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.4, 0.07), new THREE.MeshBasicMaterial({ color: 0xb07cff, side: THREE.DoubleSide }));
+    strip.position.y = H / 2 + 0.25;
+    group.add(strip);
     scene.add(group);
     panels.push({ u, group, work, mat, video: null, live: false });
   }
