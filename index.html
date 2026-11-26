@@ -295,6 +295,7 @@
 import * as THREE from "three";
 import { FontLoader } from "three/addons/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 // ================= Config =================
 const SUPA_URL = "https://aoabbtazodqpkkriitfj.supabase.co";
@@ -582,6 +583,67 @@ function initScene() {
     orbs.push(orb);
   }
 
+  // ---- Hero character: glossy soft play-button prism (MORI MOCHI reference level) ----
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  function roundedTriShape(R, cr) {
+    // rounded triangle pointing right (+x)
+    const pts = [];
+    for (let i = 0; i < 3; i++) {
+      const a = (i * Math.PI * 2) / 3;
+      pts.push(new THREE.Vector2(Math.cos(a) * R, Math.sin(a) * R));
+    }
+    const sh = new THREE.Shape();
+    for (let i = 0; i < 3; i++) {
+      const cur = pts[i], next = pts[(i + 1) % 3], prev = pts[(i + 2) % 3];
+      const toPrev = prev.clone().sub(cur).normalize();
+      const toNext = next.clone().sub(cur).normalize();
+      const p1 = cur.clone().add(toPrev.multiplyScalar(cr));
+      const p2 = cur.clone().add(toNext.multiplyScalar(cr));
+      if (i === 0) sh.moveTo(p1.x, p1.y); else sh.lineTo(p1.x, p1.y);
+      sh.quadraticCurveTo(cur.x, cur.y, p2.x, p2.y);
+    }
+    sh.closePath();
+    return sh;
+  }
+
+  const prismGeo = new THREE.ExtrudeGeometry(roundedTriShape(1.5, 0.45), {
+    depth: 0.55, bevelEnabled: true, bevelThickness: 0.16, bevelSize: 0.16,
+    bevelSegments: 5, curveSegments: 32
+  });
+  prismGeo.center();
+  const prismMat = new THREE.MeshPhysicalMaterial({
+    color: 0x8b3dff, metalness: 0.08, roughness: 0.22,
+    clearcoat: 1, clearcoatRoughness: 0.12,
+    emissive: 0x3d1a80, emissiveIntensity: 0.3, envMapIntensity: 1.25
+  });
+  const prism = new THREE.Mesh(prismGeo, prismMat);
+  prism.position.set(0, 0.3, 2.2);
+  prism.rotation.y = -0.35;
+  prism.scale.setScalar(isMobile ? 0.85 : 1.15);
+  heroGroup.add(prism);
+
+  // soft fake contact shadow under the prism
+  const shadowCanvas = document.createElement("canvas");
+  shadowCanvas.width = shadowCanvas.height = 128;
+  const sctx = shadowCanvas.getContext("2d");
+  const grad = sctx.createRadialGradient(64, 64, 6, 64, 64, 62);
+  grad.addColorStop(0, "rgba(20,8,45,0.85)");
+  grad.addColorStop(1, "rgba(20,8,45,0)");
+  sctx.fillStyle = grad;
+  sctx.fillRect(0, 0, 128, 128);
+  const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+  const prismShadow = new THREE.Sprite(new THREE.SpriteMaterial({ map: shadowTex, transparent: true, opacity: 0.8, depthWrite: false }));
+  prismShadow.scale.set(4.2, 1.9, 1);
+  prismShadow.position.set(0, -1.6, 2.2);
+  heroGroup.add(prismShadow);
+
+  // glossy key light for the prism
+  const prismKey = new THREE.DirectionalLight(0xfff1e0, 2.2);
+  prismKey.position.set(4, 6, 7);
+  scene.add(prismKey);
+
   // Interaction
   let dragging = false, lastX = 0, lastY = 0, rotY = 0, rotX = 0, rotVel = 0, rotXVel = 0;
   const pointer = { x: 0, y: 0 };
@@ -639,6 +701,24 @@ function initScene() {
     camera.position.y += (camTargetY - pointer.y * 0.5 - camera.position.y) * 0.03;
     camera.position.z += (camTargetZ - camera.position.z) * 0.045;
     camera.lookAt(0, 0, 0);
+
+    // Hero prism: float, pointer steering, soft wobble
+    if (prism) {
+      const floatY = Math.sin(t * 1.15) * 0.28;
+      prism.position.y = 0.3 + floatY;
+      const targetRotY = -0.35 + pointer.x * 0.55 + t * 0.12;
+      const targetRotX = -pointer.y * 0.32;
+      prism.rotation.y += (targetRotY - prism.rotation.y) * 0.06;
+      prism.rotation.x += (targetRotX - prism.rotation.x) * 0.06;
+      const wob = Math.sin(t * 2.1);
+      prism.scale.y = (isMobile ? 0.85 : 1.15) * (1 + wob * 0.045);
+      prism.scale.x = prism.scale.z = (isMobile ? 0.85 : 1.15) * (1 - wob * 0.03);
+      // contact shadow tracks the float
+      const lift = (floatY + 0.28) / 0.56; // 0..1
+      prismShadow.material.opacity = 0.85 - lift * 0.35;
+      const shScale = 4.2 - lift * 0.9;
+      prismShadow.scale.set(shScale, shScale * 0.45, 1);
+    }
 
     // Rings: 4x speed during intro, easing to 1x
     const ringSpeedMult = 4 - 3 * introPEase; // 4x at introP=0, 1x at introP=1
