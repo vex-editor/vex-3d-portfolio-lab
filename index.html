@@ -933,7 +933,7 @@ function runIntro(onDone) {
   intro.addEventListener("click", finish, { once: true });
   function tick(now) {
     if (finished) return;
-    const p = Math.min((now - t0) / (EXIT_AT - 120), 1);
+    const p = Math.min(Math.max((now - t0) / (EXIT_AT - 120), 0), 1);
     const eased = 1 - Math.pow(1 - p, 2);
     if (fill) fill.style.width = (eased * 100).toFixed(1) + "%";
     if (count) count.textContent = Math.round(eased * 100) + "%";
