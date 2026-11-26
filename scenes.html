@@ -64,6 +64,20 @@
     font-weight:700; font-size:clamp(1.2rem,3.4vw,2.2rem); will-change:transform,opacity;
   }
 
+  /* Scene E: hero-scroll poster scatter */
+  #sceneE { height:300vh; }
+  #scatterE { position:absolute; inset:0; transform-style:preserve-3d; }
+  .scard {
+    position:absolute; width:min(240px,30vw); aspect-ratio:4/3; border-radius:14px; overflow:hidden;
+    border:1px solid var(--border); box-shadow:0 20px 60px rgba(0,0,0,.55); will-change:transform,opacity;
+  }
+  .scard img { width:100%; height:100%; object-fit:cover; display:block; }
+  #titleE {
+    position:relative; z-index:2; text-align:center; font-weight:900;
+    font-size:clamp(2.4rem,9vw,7rem); line-height:1.15; will-change:transform,opacity;
+  }
+  #titleE small { display:block; font-size:clamp(.8rem,1.6vw,1.05rem); color:var(--muted); font-weight:400; margin-top:14px; }
+
   /* Scene D: CTA */
   #sceneD { height:110vh; }
   #sceneD .stage { display:grid; place-items:center; }
@@ -126,6 +140,14 @@
   </div>
 </section>
 
+<!-- E: hero-scroll poster scatter -->
+<section class="scene" id="sceneE" data-bg="#08081A">
+  <div class="stage">
+    <div id="scatterE"></div>
+    <h1 id="titleE">كل فريم محسوب<small>الشغل بيتفرّق ويكشف العنوان</small></h1>
+  </div>
+</section>
+
 <!-- D: CTA -->
 <section class="scene" id="sceneD" data-bg="#06070F">
   <div class="stage">
@@ -154,6 +176,24 @@ const titleA = document.getElementById("titleA"), cardA = document.getElementByI
 const titleB = document.getElementById("titleB"), trackB = document.getElementById("trackB");
 const titleC = document.getElementById("titleC"), mummyC = document.getElementById("mummyC"), wordC = document.getElementById("wordC");
 const giantD = document.getElementById("giantD");
+const sceneE = document.getElementById("sceneE"), scatterE = document.getElementById("scatterE"), titleE = document.getElementById("titleE");
+const SCARDS = [
+  { img: "1-vxw1.jpg", x: -34, y: -26, r: -10, top: "30%", left: "32%" },
+  { img: "2-vxw2.jpg", x: 34, y: -24, r: 9, top: "28%", left: "68%" },
+  { img: "2-vxw5.jpg", x: -38, y: 6, r: -7, top: "52%", left: "27%" },
+  { img: "3-vxw3.jpg", x: 38, y: 8, r: 8, top: "54%", left: "73%" },
+  { img: "2-vxw6.jpg", x: -28, y: 34, r: -12, top: "72%", left: "36%" },
+  { img: "4-vxw4.jpg", x: 28, y: 36, r: 11, top: "74%", left: "64%" },
+];
+SCARDS.forEach(c => {
+  const d = document.createElement("div");
+  d.className = "scard";
+  d.style.top = c.top; d.style.left = c.left;
+  d.style.transform = "translate(-50%,-50%)";
+  d._dir = { x: c.x, y: c.y, r: c.r };
+  d.innerHTML = `<img src="${c.img}" alt="">`;
+  scatterE.appendChild(d);
+});
 const sceneA = document.getElementById("sceneA"), sceneB = document.getElementById("sceneB"),
       sceneC = document.getElementById("sceneC"), sceneD = document.getElementById("sceneD");
 const isMobile = innerWidth < 768;
@@ -189,6 +229,20 @@ function update() {
   wordC.style.opacity = clamp01((pC - 0.55) * 2.4);
   wordC.style.transform = `translateY(${(1 - clamp01((pC - 0.55) * 2.4)) * 34}px)`;
   titleC.style.opacity = 1 - clamp01(pC * 1.2) * 0.35;
+
+  // E: posters scatter outward in 3D while the title reveals
+  const pE = progressOf(sceneE);
+  const cards = scatterE.children;
+  for (let i = 0; i < cards.length; i++) {
+    const d = cards[i]._dir;
+    const dist = pE * 1.15;
+    cards[i].style.transform =
+      `translate(-50%,-50%) translate(${d.x * dist}vw, ${d.y * dist}vh) rotateZ(${d.r * pE}deg) translateZ(${-120 * pE}px)`;
+    cards[i].style.opacity = 1 - pE * 0.55;
+  }
+  const reveal = clamp01((pE - 0.18) * 1.8);
+  titleE.style.transform = `scale(${0.7 + reveal * 0.3})`;
+  titleE.style.opacity = reveal;
 
   // D: outline giant pulses in
   const pD = progressOf(sceneD);

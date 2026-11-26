@@ -301,17 +301,28 @@ addEventListener("pointermove", e => { tx = e.clientX; ty = e.clientY; }, { pass
   requestAnimationFrame(floatLoop);
 })();
 
-/* ============ 3) 3D TILTED MARQUEE ============ */
-const ROW1 = ["1-vxw1.jpg","2-vxw2.jpg","3-vxw3.jpg","4-vxw4.jpg","2-vxw5.jpg","2-vxw6.jpg"];
-const ROW2 = ["2-coffee-before-after-poster.jpg","2-vex-stand-out-poster.jpg","4-vex-motion-poster.jpg","8-og-preview.jpg","9-archive-ba-poster.jpg","8-archive-study-poster.jpg"];
-function fillRow(id, imgs) {
+/* ============ 3) 3D TILTED MARQUEE — video cards, hover = stop + play WITH sound ============ */
+const ROW1 = ["1-vxw5.mp4","5-vxw1.mp4","6-vxw2.mp4","7-vxw3.mp4"];
+const ROW2 = ["1-vex-motion.mp4","1-coffee-before-after.mp4","1-vex-stand-out.mp4","8-vxw4.mp4"];
+let userActivated = false;
+addEventListener("pointerdown", () => { userActivated = true; }, { once: true, capture: true });
+function fillRow(id, vids) {
   const row = document.getElementById(id);
   const track = document.createElement("div");
   track.className = "mtrack";
-  [...imgs, ...imgs].forEach(src => {
+  [...vids, ...vids].forEach(src => {
     const d = document.createElement("div");
     d.className = "mcard";
-    d.innerHTML = `<img src="${src}" alt="">`;
+    d.innerHTML = `<video src="${src}" muted loop playsinline preload="metadata"></video>`;
+    const v = d.querySelector("video");
+    d.addEventListener("pointerenter", e => {
+      if (e.pointerType !== "mouse") return;
+      v.play().then(() => {
+        if (userActivated) { v.muted = false; v.volume = 1; }
+      }).catch(() => {});
+    });
+    d.addEventListener("pointerleave", () => { v.pause(); v.muted = true; });
+    d.addEventListener("click", () => { userActivated = true; if (!v.paused) { v.muted = false; v.volume = 1; } });
     track.appendChild(d);
   });
   row.appendChild(track);
