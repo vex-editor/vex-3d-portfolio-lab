@@ -237,7 +237,7 @@ addEventListener("touchmove", e => { const t = e.touches[0]; setMouse(t.clientX,
 addEventListener("touchend", () => { mouse.active = false; mouse.x = mouse.y = -9999; });
 
 const img = new Image();
-img.src = "mummy-muscular.webp";
+img.src = "mummy-drawn.webp";
 img.onload = () => { buildParticles(img); requestAnimationFrame(frame); if (RECORD) startRecording(); };
 let rsz; addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(() => buildParticles(img), 180); });
 
