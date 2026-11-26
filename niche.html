@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=premium-20261123">
-<link rel="stylesheet" href="niches.css?v=vx1">
+<link rel="stylesheet" href="niches.css?v=vx2">
 <link rel="stylesheet" href="brand.css?v=premium-20261123">
 <style>#language-toggle{font:700 12px Cairo,Arial,sans-serif;color:var(--cream);background:transparent;border:1px solid #9758ec88;border-radius:30px;padding:7px 12px;cursor:pointer;white-space:nowrap}#language-toggle:hover,#language-toggle:focus-visible{background:#7e33d733;outline:2px solid #9f70ff;outline-offset:3px}html[lang=en] .hero-content,html[lang=en] .about-copy,html[lang=en] .contact-copy{text-align:left}html[lang=en] .hero-title{letter-spacing:-.035em;line-height:1.08;font-family:Arial,sans-serif}html[lang=en] .niche-detail h1,html[lang=en] .niche-detail h2{font-family:Arial,sans-serif}html[lang=en] .niche-card p{line-height:1.7}@media(max-width:640px){.nav nav{flex-wrap:wrap}#language-toggle{font-size:11px;padding:5px 9px}html[lang=en] .nav nav{gap:7px;font-size:11px}html[lang=en] .nav-cta{padding:7px 10px}}
 </style>
@@ -45,7 +45,7 @@
 <script>
 (async()=>{try{const r=await fetch('https://aoabbtazodqpkkriitfj.supabase.co/rest/v1/site_links?select=key,url',{headers:{apikey:'sb_publishable_PKo1mx_pBxg16R8y2_6y6Q_aGRWWDU4'},cache:'no-store'});if(!r.ok)throw Error('links');const rows=await r.json();for(const k of ['whatsapp','facebook','instagram']){const row=rows.find(v=>v.key===k);const a=document.getElementById('social-'+k);if(row?.url&&a){a.href=row.url;a.hidden=false;if(k==='whatsapp'){document.querySelectorAll('[data-contact-action]').forEach(b=>{b.href=row.url;b.target='_blank';b.rel='noopener noreferrer'})}}}}catch(e){console.warn('social links unavailable',e)}})();
 </script>
-<script src="vex-player.js?v=1"></script><script src="niches.js?v=vx1"></script>
+<script src="vex-player.js?v=1"></script><script src="niches.js?v=vx2"></script>
 <script>(()=>{'use strict';
 const pairs=[['مطاعم وكافيهات','Restaurants & cafés'],['مونتاج ريلز للمطاعم والكافيهات.','Reel editing for restaurants and cafés.'],['القهوة | قبل وبعد','Coffee | Before & after'],['مقارنة قبل وبعد المونتاج، بكابشن عربي وعناصر موشن. ١٤ ثانية · 9:16.','Before and after editing, with Arabic captions and motion graphics. 14 seconds · 9:16.'],['الفيديوهات','Videos'],
 
