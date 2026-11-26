@@ -43,12 +43,23 @@
     #videoWrapA { aspect-ratio:auto; height:100svh; }
   }
   #titleA { text-shadow:0 4px 30px rgba(6,7,15,.85), 0 1px 8px rgba(6,7,15,.6); }
-  #soundA {
-    position:absolute; bottom:14px; inset-inline-end:14px; z-index:4;
-    padding:8px 14px; border-radius:999px; border:1px solid var(--border);
-    background:rgba(6,7,15,.72); color:var(--fg); font:inherit; font-size:.8rem;
-    backdrop-filter:blur(8px); cursor:pointer;
+  /* Enter gate: shown only when unmuted autoplay is blocked */
+  #enterGate {
+    position:fixed; inset:0; z-index:40; display:none; place-items:center; cursor:pointer;
+    background:radial-gradient(120% 120% at 50% 40%, #14093A 0%, #06070F 60%);
   }
+  #enterGate.show { display:grid; }
+  .gate-inner { text-align:center; animation:gatePulse 2.2s ease-in-out infinite; }
+  .gate-logo { font-weight:900; font-size:clamp(3rem,10vw,6rem); letter-spacing:.06em; }
+  .gate-logo span { color:var(--purple-bright); }
+  .gate-hint { margin-top:14px; color:var(--muted); font-size:clamp(.85rem,2vw,1rem); }
+  @keyframes gatePulse { 0%,100% { opacity:.75; transform:scale(1); } 50% { opacity:1; transform:scale(1.03); } }
+  /* Fade to site when the intro ends */
+  #fadeOut {
+    position:fixed; inset:0; z-index:60; background:#06070F; opacity:0;
+    pointer-events:none; transition:opacity .8s ease;
+  }
+  #fadeOut.show { opacity:1; }
 
   /* Scene B: horizontal 3D work strip */
   #sceneB { height:320vh; }
@@ -114,11 +125,18 @@
   <div class="stage">
     <h1 class="scene-title" id="titleA">الشغل اللي بيتشاف<small>انزل تحت — الجولة بتبدأ</small></h1>
     <div id="videoWrapA">
-      <video id="videoA" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted loop playsinline autoplay></video>
-      <button id="soundA" type="button" aria-label="تشغيل الصوت">🔇 شغّل الصوت</button>
+      <video id="videoA" src="intro-sceneA.mp4" poster="posters/intro-sceneA.jpg" preload="auto" muted playsinline autoplay></video>
     </div>
   </div>
 </section>
+
+<div id="enterGate" role="button" aria-label="اضغط للدخول">
+  <div class="gate-inner">
+    <div class="gate-logo">VEX<span>.</span></div>
+    <div class="gate-hint">اضغط في أي مكان عشان تبدأ</div>
+  </div>
+</div>
+<div id="fadeOut"></div>
 
 <!-- B: horizontal 3D work strip -->
 <section class="scene" id="sceneB" data-bg="#0D0620">
@@ -168,12 +186,40 @@ function progressOf(el) {
 const clamp01 = v => Math.min(1, Math.max(0, v));
 
 const titleA = document.getElementById("titleA");
-const videoA = document.getElementById("videoA"), soundA = document.getElementById("soundA");
-soundA.addEventListener("click", () => {
-  videoA.muted = !videoA.muted;
-  if (!videoA.muted) videoA.play();
-  soundA.textContent = videoA.muted ? "🔇 شغّل الصوت" : "🔊 اكتم الصوت";
-  soundA.setAttribute("aria-label", videoA.muted ? "تشغيل الصوت" : "كتم الصوت");
+const videoA = document.getElementById("videoA");
+const enterGate = document.getElementById("enterGate"), fadeOut = document.getElementById("fadeOut");
+
+// Sound without a button: try unmuted autoplay (works with high Media Engagement),
+// otherwise hold on a cinematic enter gate; the first tap starts the intro with sound.
+let introStarted = false;
+function beginIntro(withSound) {
+  introStarted = true;
+  enterGate.classList.remove("show");
+  videoA.muted = !withSound;
+  videoA.currentTime = 0;
+  videoA.play().catch(() => { videoA.muted = true; videoA.play().catch(() => {}); });
+}
+(async () => {
+  try {
+    videoA.muted = false;
+    await videoA.play();
+    introStarted = true; // unmuted autoplay allowed (returning/high-engagement visitor)
+  } catch (e) {
+    videoA.muted = true;
+    videoA.pause();
+    enterGate.classList.add("show");
+    document.body.style.overflow = "hidden";
+    enterGate.addEventListener("pointerdown", () => {
+      document.body.style.overflow = "";
+      beginIntro(true);
+    }, { once: true });
+  }
+})();
+
+// When the intro ends, fade out and bring up the site - no extra click.
+videoA.addEventListener("ended", () => {
+  fadeOut.classList.add("show");
+  setTimeout(() => { location.assign("./"); }, 850);
 });
 const titleB = document.getElementById("titleB"), trackB = document.getElementById("trackB");
 const giantD = document.getElementById("giantD");
@@ -256,7 +302,12 @@ function update() {
 addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
 // pause offscreen media
 const mediaObserver = new IntersectionObserver((es) => {
-  es.forEach(e => { const v = e.target; if (e.isIntersecting) { v.play().catch(() => {}); } else { v.pause(); } });
+  es.forEach(e => {
+    const v = e.target;
+    if (v === videoA && !introStarted) return;
+    if (e.isIntersecting) { v.play().catch(() => { v.muted = true; v.play().catch(() => {}); }); }
+    else { v.pause(); }
+  });
 }, { threshold: 0.05 });
 document.querySelectorAll(".scene video").forEach(v => mediaObserver.observe(v));
 update();
