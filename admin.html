@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEX — لوحة التحكم</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh}
+a{color:var(--teal)}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 80px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.logo{font-weight:900;font-size:22px;letter-spacing:1px}
+.logo span{color:var(--teal)}
+.topbar .actions{display:flex;gap:8px;align-items:center}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px}
+.card h2{font-size:18px;margin-bottom:4px}
+.card .hint{color:var(--muted);font-size:13px;margin-bottom:14px}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+input[type=text],input[type=email],input[type=password],textarea{
+  width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+  color:var(--text);font-family:inherit;font-size:15px;padding:10px 12px;outline:none;
+}
+input:focus,textarea:focus{border-color:var(--teal)}
+textarea{min-height:70px;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel2);
+  color:var(--text);font-family:inherit;font-size:14px;font-weight:700;border-radius:10px;
+  padding:9px 16px;cursor:pointer;transition:all .15s;text-decoration:none}
+.btn:hover{border-color:var(--teal);color:var(--teal)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:var(--text)}
+.btn.primary:hover{filter:brightness(1.1);color:var(--text)}
+.btn.danger{color:var(--danger)}
+.btn.danger:hover{border-color:var(--danger)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:default}
+.work-row{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.work-row .thumb{width:64px;height:40px;border-radius:8px;background:var(--panel2);object-fit:cover;flex-shrink:0}
+.work-row .info{flex:1;min-width:0}
+.work-row .info b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.work-row .info span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right}
+.work-row .ops{display:flex;gap:6px;flex-shrink:0}
+.order-btns{display:flex;flex-direction:column;gap:2px}
+.order-btns button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;
+  width:26px;height:18px;font-size:10px;cursor:pointer;line-height:1}
+.order-btns button:hover{color:var(--teal);border-color:var(--teal)}
+#toast{position:fixed;bottom:22px;right:50%;transform:translateX(50%);background:var(--panel);
+  border:1px solid var(--teal);color:var(--text);padding:10px 22px;border-radius:12px;font-weight:700;
+  opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}
+#toast.show{opacity:1}
+#toast.err{border-color:var(--danger)}
+.modal-bg{position:fixed;inset:0;background:rgba(36,35,30,.85);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;width:100%;max-width:560px;max-height:90vh;overflow:auto}
+.modal .frame{aspect-ratio:16/9;background:var(--panel2);border-radius:12px;overflow:hidden;margin:12px 0}
+.modal .frame iframe,.modal .frame video,.modal .frame img{width:100%;height:100%;border:0;object-fit:cover}
+.hidden{display:none!important}
+.login-wrap{max-width:400px;margin:10vh auto 0}
+.login-wrap .logo{text-align:center;margin-bottom:18px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--muted);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.file-row{display:flex;gap:8px;align-items:center}
+.file-row input[type=file]{font-size:12px;color:var(--muted)}
+.section-flex{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+
+
+</style>
+<link rel="stylesheet" href="niches.css?v=premium-20261123">
+<style>@media(max-width:600px){.work-row{flex-wrap:wrap}.work-row .ops{width:100%;flex-wrap:wrap}.topbar .actions{flex-wrap:wrap}}
+
+</style>
+<style>.card{border-top:2px solid var(--purple-deep)}.card h2{color:var(--purple-bright)}.logo span{color:var(--purple-bright)}input:focus,textarea:focus{outline:2px solid var(--purple);outline-offset:2px}</style>
+<link rel="stylesheet" href="brand.css?v=premium-20261123">
+<style>.ai-account #works-list .danger,.ai-account #niches-admin .danger{display:none!important}.ai-account #panel-view:before{content:'حساب AI · إضافة وتعديل فقط · كل تغيير بيتسجل';display:block;padding:16px;color:#c7a6f7;border:1px solid #7746b944;border-radius:14px;margin-bottom:20px}</style></head>
+<body>
+
+<div id="toast"></div>
+
+<!-- Login -->
+<div class="login-wrap" id="login-view">
+  <div class="logo">VEX<span>.</span> لوحة التحكم</div>
+  <div class="card">
+    <h2>تسجيل الدخول</h2>
+    <p class="hint">منطقة خاصة بصاحب الموقع فقط.</p>
+    <label>البريد الإلكتروني</label>
+    <input type="email" id="login-email" autocomplete="username" placeholder="you@example.com">
+    <label>كلمة السر</label>
+    <input type="password" id="login-pass" autocomplete="current-password" placeholder="••••••••">
+    <div style="margin-top:16px">
+      <button class="btn primary" id="login-btn" style="width:100%;justify-content:center">دخول</button>
+    </div>
+    <p class="hint" id="login-err" style="color:var(--danger);margin-top:10px"></p>
+    <p style="margin-top:6px"><a href="#" id="forgot-link" style="color:var(--accent,#8B3DFF);font-size:14px">نسيت كلمة السر؟</a></p>
+  </div>
+  <div class="card hidden" id="reset-card">
+    <h2>كلمة سر جديدة</h2>
+    <p class="hint">اكتب كلمة سر جديدة (8 حروف على الأقل).</p>
+    <input type="password" id="new-pass" autocomplete="new-password" placeholder="••••••••">
+    <input type="password" id="new-pass2" autocomplete="new-password" placeholder="أعد كتابتها" style="margin-top:8px">
+    <div style="margin-top:16px"><button class="btn primary" id="new-pass-btn" style="width:100%;justify-content:center">حفظ ودخول</button></div>
+    <p class="hint" id="reset-msg" style="margin-top:10px"></p>
+  </div>
+</div>
+
+<!-- Panel -->
+<div class="wrap hidden" id="panel-view">
+  <div class="topbar">
+    <div class="logo">VEX<span>.</span> لوحة التحكم</div>
+    <div class="actions">
+      <a class="btn small" href="./" target="_blank" rel="noopener">فتح الموقع ↗</a>
+      <button class="btn small" id="logout-btn">خروج</button>
+    </div>
+  </div>
+
+  <!-- Works -->
+  <div class="card">
+    <div class="section-flex">
+      <div>
+        <h2>الأعمال</h2>
+        <p class="hint">أضف، عدّل، رتّب، امسح — التغيير يظهر على الموقع فورًا.</p>
+      </div>
+      <button class="btn primary" id="add-btn">+ عمل جديد</button>
+    </div>
+    <div id="works-list"><p class="hint"><span class="spin"></span> بنحمّل…</p></div>
+  </div>
+
+  <!-- Links -->
+  <div class="card">
+    <h2>لينكات التواصل</h2>
+    <p class="hint">واتساب يظهر دايمًا. فيسبوك وإنستجرام يظهروا في فوتر الموقع لما تحط لينكاتهم.</p>
+    <label>واتساب (لينك wa.me كامل)</label>
+    <input type="text" id="link-whatsapp" dir="ltr" placeholder="https://wa.me/2015...?text=...">
+    <label>فيسبوك</label>
+    <input type="text" id="link-facebook" dir="ltr" placeholder="https://facebook.com/...">
+    <label>إنستجرام</label>
+    <input type="text" id="link-instagram" dir="ltr" placeholder="https://instagram.com/...">
+    <div style="margin-top:14px"><button class="btn primary" id="links-save">حفظ اللينكات</button></div>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <h2 id="edit-title">تعديل عمل</h2>
+    <label for="f-playlist">البلاي ليست *</label><select id="f-playlist" style="width:100%;padding:13px;color:#eee;background:#171123;border:1px solid #5c3f83;border-radius:10px"><option value="">بنحمّل البلاي ليستات…</option></select><div id="f-new-playlist-wrap" hidden><label for="f-new-playlist">اسم البلاي ليست الجديدة *</label><input id="f-new-playlist" type="text" maxlength="80"></div><p class="hint">كل فيديو داخل بلاي ليست. اختار واحدة أو أنشئ جديدة.</p><label>العنوان *</label>
+    <input type="text" id="f-title">
+    <label>لينك الفيديو (درايف / يوتيوب / mp4)</label>
+    <input type="text" id="f-video" dir="ltr">
+    <label>صورة الغلاف (اختياري)</label>
+    <div class="file-row">
+      <input type="text" id="f-cover" dir="ltr" placeholder="لينك صورة أو ارفع ملف ←">
+      <input type="file" id="f-cover-file" accept="image/*">
+    </div>
+    <label>وصف قصير (اختياري)</label>
+    <textarea id="f-desc"></textarea>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+      <button class="btn" id="edit-cancel">إلغاء</button>
+      <button class="btn" id="edit-preview">معاينة</button>
+      <button class="btn primary" id="edit-save">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Preview modal -->
+<div class="modal-bg" id="preview-modal">
+  <div class="modal">
+    <h2>معاينة — كده هيظهر على الموقع</h2>
+    <div class="frame" id="preview-frame"></div>
+    <b id="preview-title"></b>
+    <p id="preview-desc" style="color:var(--muted);font-size:14px;margin-top:4px"></p>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px">
+      <button class="btn" id="preview-close">قفل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = "https://aoabbtazodqpkkriitfj.supabase.co";
+const SUPA_KEY = "sb_publishable_PKo1mx_pBxg16R8y2_6y6Q_aGRWWDU4";
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+const $ = (id) => document.getElementById(id);
+let works = [];
+let editingId = null; // null = new
+
+function toast(msg, isErr) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = "show" + (isErr ? " err" : "");
+  setTimeout(() => (t.className = ""), 2600);
+}
+
+/* ---------- auth ---------- */
+async function boot() {
+  const { data } = await sb.auth.getSession();
+  if (/type=recovery/.test(location.hash)) window.__recovering = true;
+  if (window.__recovering) showReset(); else if (data.session) showPanel(); else showLogin();
+  sb.auth.onAuthStateChange((ev, s) => {
+    if (ev === "PASSWORD_RECOVERY") { window.__recovering = true; showReset(); return; }
+    if (window.__recovering) return;
+    s ? showPanel() : showLogin();
+  });
+}
+function showReset() {
+  $("login-view").classList.remove("hidden");
+  $("panel-view").classList.add("hidden");
+  [...$("login-view").children].forEach(c => { if (c.id !== "reset-card" && c.classList.contains("card")) c.classList.add("hidden"); });
+  $("reset-card").classList.remove("hidden");
+}
+$("forgot-link").onclick = async (e) => {
+  e.preventDefault();
+  const em = $("login-email").value.trim();
+  if (!em) { $("login-err").style.color = "var(--danger)"; $("login-err").textContent = "اكتب الإيميل فوق الأول وبعدين اضغط نسيت كلمة السر."; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin + location.pathname });
+  $("login-err").style.color = error ? "var(--danger)" : "inherit";
+  $("login-err").textContent = error ? "حصلت مشكلة، جرب كمان شوية." : "لو الإيميل مسجل، هيوصلك رابط لإعادة تعيين كلمة السر. شوف الـ Inbox والـ Spam.";
+};
+$("new-pass-btn").onclick = async () => {
+  const a = $("new-pass").value, b = $("new-pass2").value, m = $("reset-msg");
+  m.style.color = "var(--danger)";
+  if (a.length < 8) { m.textContent = "كلمة السر لازم 8 حروف على الأقل."; return; }
+  if (a !== b) { m.textContent = "الكلمتين مش متطابقتين."; return; }
+  const { error } = await sb.auth.updateUser({ password: a });
+  if (error) { m.textContent = "ماتحفظتش: " + (error.message || "جرب تاني"); return; }
+  window.__recovering = false;
+  history.replaceState(null, "", location.pathname);
+  location.reload();
+};
+function showLogin() {
+  $("login-view").classList.remove("hidden");
+  $("panel-view").classList.add("hidden");
+}
+async function showPanel() {
+  $("login-view").classList.add("hidden");
+  $("panel-view").classList.remove("hidden");
+  await Promise.all([loadWorks(), loadLinks()]);
+  const {data:sessionData}=await sb.auth.getSession();const isAI=sessionData.session?.user?.id==='c24cd0e4-2615-418f-ba5f-71acb1ee7782';
+  document.body.classList.toggle('ai-account',isAI);
+  if(isAI){document.querySelectorAll('[data-act="del"],#links-save').forEach(b=>b.style.display='none');for(const id of ['link-whatsapp','link-facebook','link-instagram'])$(id).disabled=true;}
+  await loadAIActivity();await loadOwnerStats();
+}
+$("login-btn").onclick = async () => {
+  $("login-err").textContent = "";
+  $("login-btn").disabled = true;
+  const { error } = await sb.auth.signInWithPassword({
+    email: $("login-email").value.trim(),
+    password: $("login-pass").value,
+  });
+  $("login-btn").disabled = false;
+  if (error) $("login-err").textContent = "بيانات الدخول مش صح — اتأكد وجرب تاني.";
+};
+$("login-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") $("login-btn").click(); });
+$("logout-btn").onclick = () => sb.auth.signOut();
+
+async function loadAIActivity(){let section=$('ai-activity');if(!section){section=document.createElement('section');section.className='card';section.id='ai-activity';const h=document.createElement('h2');h.textContent='سجل نشاط المساعد';section.append(h);$('panel-view').append(section);}const old=section.querySelector('.activity-list');if(old)old.remove();const list=document.createElement('div');list.className='activity-list';section.append(list);const {data,error}=await sb.from('ai_activity_log').select('action,resource,title,created_at').order('created_at',{ascending:false}).limit(50);if(error){list.textContent='تعذر تحميل سجل النشاط.';return;}if(!data.length){list.textContent='لسه مفيش نشاط للمساعد.';return;}data.forEach(r=>{const row=document.createElement('p');row.textContent=new Date(r.created_at).toLocaleString('ar-EG')+' · '+(r.action==='INSERT'?'إضافة':'تعديل')+' · '+(r.title||r.resource);list.append(row);});}
+async function loadOwnerStats(){const {data}=await sb.auth.getSession();if(data.session?.user?.id!=='ac03ea4a-3f62-46ec-a81f-91c4e415ba51'||document.getElementById('owner-stats'))return;const host=document.createElement('section');host.className='card';host.id='owner-stats';host.innerHTML='<h2>إحصائيات الموقع</h2><p class="hint">عدادات تقريبية بموافقة الزائر، مش أشخاص مختلفين أو رسائل مؤكدة. ممكن تشمل بوتات. آخر ٩٠ يوم فقط.</p><select id="stats-range"><option value="7">آخر ٧ أيام</option><option value="30">آخر ٣٠ يوم</option><option value="90">آخر ٩٠ يوم</option></select><div id="stats-output"></div>';$('panel-view').append(host);async function load(){const out=$('stats-output');out.textContent='بنحمّل…';const start=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Date.now()-($('stats-range').value-1)*86400000));const {data:rows,error}=await sb.from('vex_daily_counts').select('day,event,page,count').gte('day',start).order('day',{ascending:false});out.replaceChildren();if(error){out.textContent='تعذر تحميل الإحصائيات.';return}for(const [event,label]of [['page_open','فتح الصفحات'],['playlist_open','فتح البلاي ليست'],['whatsapp_click','ضغطات واتساب']]){const p=document.createElement('p');p.style.cssText='display:inline-block;padding:20px;margin:16px 8px;background:#1c1229;border-radius:14px';p.textContent=label+' : '+rows.filter(r=>r.event===event).reduce((n,r)=>n+Number(r.count),0).toLocaleString('ar-EG');out.append(p)}if(!rows.length){const p=document.createElement('p');p.className='hint';p.textContent='لسه مفيش أرقام. الحساب يبدأ من التفعيل وللزوار اللي وافقوا فقط.';out.append(p)}else{const table=document.createElement('table');table.style.cssText='width:100%;text-align:right';for(const r of rows.slice(0,100)){const row=document.createElement('tr');for(const val of [r.day,r.event,r.page,r.count]){const td=document.createElement('td');td.textContent=val;td.style.padding='8px';row.append(td)}table.append(row)}out.append(table)}}$('stats-range').onchange=load;await load()}
+
+/* ---------- works ---------- */
+async function loadWorks() {
+  const { data, error } = await sb.from("works").select("*").order("sort_order", { ascending: true });
+  if (error) { toast("مشكلة في تحميل الأعمال", true); return; }
+  works = data || [];
+  renderWorks();
+}
+function esc(s) { const d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML; }
+function renderWorks() {
+  const list = $("works-list");
+  if (!works.length) { list.innerHTML = '<p class="hint">مفيش أعمال لسه — دوس "+ عمل جديد".</p>'; return; }
+  list.innerHTML = "";
+  works.forEach((w, i) => {
+    const row = document.createElement("div");
+    row.className = "work-row";
+    const cover = w.cover_url ? `<img class="thumb" src="${esc(w.cover_url)}" alt="">` : `<div class="thumb"></div>`;
+    row.innerHTML = `
+      <div class="order-btns">
+        <button data-i="${i}" data-d="-1" ${i === 0 ? "disabled" : ""}>▲</button>
+        <button data-i="${i}" data-d="1" ${i === works.length - 1 ? "disabled" : ""}>▼</button>
+      </div>
+      ${cover}
+      <div class="info"><b>${esc(w.title)}</b><span>${esc(w.video_url || "")}</span></div>
+      <div class="ops">
+        <button class="btn small" data-act="prev" data-i="${i}">معاينة</button>
+        <button class="btn small" data-act="edit" data-i="${i}">تعديل</button>
+        <button class="btn small danger" data-act="del" data-i="${i}">مسح</button>
+      </div>`;
+    list.appendChild(row);
+  });
+  list.querySelectorAll(".order-btns button").forEach((b) => (b.onclick = () => move(+b.dataset.i, +b.dataset.d)));
+  list.querySelectorAll(".ops button").forEach((b) => {
+    const i = +b.dataset.i, act = b.dataset.act;
+    if (act === "edit") b.onclick = () => openEdit(works[i]);
+    if (act === "del") b.onclick = () => del(works[i]);
+    if (act === "prev") b.onclick = () => openPreview(works[i].title, works[i].video_url, works[i].cover_url, works[i].description);
+  });
+}
+async function move(i, d) {
+  const j = i + d;
+  if (j < 0 || j >= works.length) return;
+  const a = works[i], b = works[j];
+  const soA = a.sort_order, soB = b.sort_order;
+  const { error: e1 } = await sb.from("works").update({ sort_order: soB }).eq("id", a.id);
+  const { error: e2 } = await sb.from("works").update({ sort_order: soA }).eq("id", b.id);
+  if (e1 || e2) { toast("الترتيب ماتحفظش", true); return; }
+  [a.sort_order, b.sort_order] = [soB, soA];
+  [works[i], works[j]] = [works[j], works[i]];
+  renderWorks();
+  toast("اترتّب ✓");
+}
+async function del(w) {
+  if (!confirm(`تمسح "${w.title}" نهائيًا؟`)) return;
+  const { error } = await sb.from("works").delete().eq("id", w.id);
+  if (error) { toast("المسح فشل", true); return; }
+  works = works.filter((x) => x.id !== w.id);
+  renderWorks();
+  toast("اتمسح ✓");
+}
+
+/* ---------- edit form ---------- */
+$("add-btn").onclick = () => openEdit(null);
+let playlistConfig=[];
+const videoKey=u=>{try{const x=new URL(u);return x.pathname.match(/\/file\/d\/([\w-]+)/)?.[1]||x.searchParams.get('id')||x.href}catch{return u||''}};
+async function readPlaylists(){const {data,error}=await sb.from('site_links').select('url').eq('key','niches_config_v1');if(error)throw error;const list=data.length?JSON.parse(data[0].url):structuredClone(window.VexNiches.defaults);if(!Array.isArray(list))throw Error('invalid');return list;}
+$('f-playlist').onchange=()=>{$('f-new-playlist-wrap').hidden=$('f-playlist').value!=='__new';};
+async function openEdit(w) {
+  editingId = w ? w.id : null;
+  $("edit-title").textContent = w ? "تعديل عمل" : "عمل جديد";
+  $("f-title").value = w ? w.title || "" : "";
+  $("f-video").value = w ? w.video_url || "" : "";
+  $("f-cover").value = w ? w.cover_url || "" : "";
+  $("f-desc").value = w ? w.description || "" : "";
+  $("f-cover-file").value = "";
+  $('f-new-playlist').value='';$('f-new-playlist-wrap').hidden=true;$('f-playlist').replaceChildren(new Option('بنحمّل…',''));$('edit-save').disabled=true;
+  $("edit-modal").classList.add("open");
+  try{playlistConfig=await readPlaylists();const sel=$('f-playlist');sel.replaceChildren(new Option('اختار البلاي ليست…',''));playlistConfig.forEach(n=>sel.add(new Option(n.title+(n.published===false?' (مسودة)':''),n.id)));sel.add(new Option('+ إنشاء بلاي ليست جديدة','__new'));const current=w&&playlistConfig.find(n=>(n.examples||[]).some(e=>e.work_id===w.id||videoKey(e.after)===videoKey(w.video_url)));if(current)sel.value=current.id;$('edit-save').disabled=false;}catch{toast('تحميل البلاي ليستات فشل. اقفل وحاول تاني.',true);}
+
+}
+$("edit-cancel").onclick = () => $("edit-modal").classList.remove("open");
+$("f-cover-file").onchange = async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  toast("برفع الصورة…");
+  const ext = (f.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await sb.storage.from("covers").upload(path, f, { cacheControl: "3600", upsert: false });
+  if (error) { toast("الرفع فشل", true); return; }
+  const { data } = sb.storage.from("covers").getPublicUrl(path);
+  $("f-cover").value = data.publicUrl;
+  toast("الصورة اترفعت ✓");
+};
+$("edit-preview").onclick = () => openPreview($("f-title").value, $("f-video").value, $("f-cover").value, $("f-desc").value);
+$("edit-save").onclick = async () => {
+  const title = $("f-title").value.trim();
+  if (!title) { toast("العنوان مطلوب", true); return; }
+  if(!$('f-video').value.trim()){toast('لينك الفيديو مطلوب عشان يظهر في البلاي ليست',true);return;}
+  const payload = {
+    title,
+    video_url: $("f-video").value.trim() || null,
+    cover_url: $("f-cover").value.trim() || null,
+    description: $("f-desc").value.trim() || null,
+  };
+  const chosen=$('f-playlist').value,newTitle=$('f-new-playlist').value.trim();if(!chosen||(chosen==='__new'&&!newTitle)){toast('اختار بلاي ليست أو اكتب اسم الجديدة',true);return;}
+  let nextConfig;try{nextConfig=await readPlaylists();}catch{toast('تعذر تحميل البلاي ليستات. لم يتم الحفظ.',true);return;}
+  if(chosen!=='__new'&&!nextConfig.some(n=>n.id===chosen)){toast('البلاي ليست اتغيرت. افتح النموذج تاني.',true);return;}
+  if(chosen==='__new'&&nextConfig.some(n=>n.title.trim()===newTitle)){toast('الاسم موجود، اختار البلاي ليست من القائمة.',true);return;}
+  $("edit-save").disabled = true;
+  let error,savedWorkId=editingId;
+  if (editingId) {
+    ({ error } = await sb.from("works").update(payload).eq("id", editingId));
+  } else {
+    const next = works.length ? Math.max(...works.map((w) => w.sort_order || 0)) + 1 : 1;
+    const inserted=await sb.from("works").insert({ ...payload, sort_order: next }).select('id').single();error=inserted.error;savedWorkId=inserted.data?.id;
+  }
+  if (error) { $("edit-save").disabled=false; toast("الحفظ فشل", true); return; }
+  if(!savedWorkId){$('edit-save').disabled=false;toast('تعذر تأكيد الفيديو. حدّث الصفحة قبل المحاولة تاني.',true);return;}
+  for(const n of nextConfig)n.examples=(n.examples||[]).filter(e=>e.work_id!==savedWorkId&&(!payload.video_url||videoKey(e.after)!==videoKey(payload.video_url)));
+  let target=nextConfig.find(n=>n.id===chosen);if(chosen==='__new'){target={id:'playlist-'+crypto.randomUUID().slice(0,12),title:newTitle,description:'',published:true,examples:[]};nextConfig.push(target);}
+  target.examples.push({work_id:savedWorkId,title:payload.title,after:payload.video_url,description:payload.description||''});
+  const assignment=await sb.from('site_links').upsert({key:'niches_config_v1',url:JSON.stringify(nextConfig)});
+  $('edit-save').disabled=false;
+  if(assignment.error){editingId=savedWorkId;toast('الفيديو اتحفظ لكن ربط البلاي ليست فشل. جرّب حفظ تاني، مش هيكرر الفيديو.',true);return;}
+  $("edit-modal").classList.remove("open");
+  await loadWorks();
+  toast("اتحفظ ✓");
+};
+
+/* ---------- preview (same logic as the site) ---------- */
+function toDrivePreview(u) {
+  const m = (u || "").match(/drive\.google\.com\/file\/d\/([^/?#]+)/);
+  if (m) return `https://drive.google.com/file/d/${m[1]}/preview`;
+  const m2 = (u || "").match(/drive\.google\.com\/open\?id=([^&#]+)/);
+  return m2 ? `https://drive.google.com/file/d/${m2[1]}/preview` : null;
+}
+function toYoutubeEmbed(u) {
+  const m = (u || "").match(/(?:youtube\.com\/watch\?[^#]*v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{6,})/);
+  return m ? `https://www.youtube.com/embed/${m[1]}` : null;
+}
+function toDriveImage(u) {
+  const m = (u || "").match(/drive\.google\.com\/file\/d\/([^/?#]+)/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800` : u;
+}
+function openPreview(title, video, cover, desc) {
+  const frame = $("preview-frame");
+  frame.innerHTML = "";
+  const drive = video ? toDrivePreview(video) : null;
+  const yt = video ? toYoutubeEmbed(video) : null;
+  const isMp4 = video ? /\.mp4($|\?)/i.test(video) : false;
+  if (drive || yt) {
+    const f = document.createElement("iframe");
+    f.src = drive || yt; f.allow = "autoplay; fullscreen"; f.allowFullscreen = true;
+    frame.appendChild(f);
+  } else if (isMp4) {
+    const v = document.createElement("video");
+    v.src = video; v.controls = true; if (cover) v.poster = toDriveImage(cover);
+    frame.appendChild(v);
+  } else if (cover) {
+    const img = document.createElement("img");
+    img.src = toDriveImage(cover);
+    frame.appendChild(img);
+  } else {
+    frame.innerHTML = '<p class="hint" style="padding:20px">مفيش فيديو أو غلاف — هيتعرض كارت فاضي على الموقع.</p>';
+  }
+  $("preview-title").textContent = title || "";
+  $("preview-desc").textContent = desc || "";
+  $("preview-modal").classList.add("open");
+}
+$("preview-close").onclick = () => $("preview-modal").classList.remove("open");
+document.querySelectorAll(".modal-bg").forEach((m) =>
+  m.addEventListener("click", (e) => { if (e.target === m) m.classList.remove("open"); })
+);
+
+/* ---------- links ---------- */
+async function loadLinks() {
+  const { data, error } = await sb.from("site_links").select("*");
+  if (error) return;
+  const map = {};
+  (data || []).forEach((r) => (map[r.key] = r.url || ""));
+  $("link-whatsapp").value = map.whatsapp || "";
+  $("link-facebook").value = map.facebook || "";
+  $("link-instagram").value = map.instagram || "";
+}
+$("links-save").onclick = async () => {
+  const rows = [
+    { key: "whatsapp", url: $("link-whatsapp").value.trim() || null },
+    { key: "facebook", url: $("link-facebook").value.trim() || null },
+    { key: "instagram", url: $("link-instagram").value.trim() || null },
+  ];
+  const { error } = await sb.from("site_links").upsert(rows);
+  if (error) { toast("الحفظ فشل", true); return; }
+  toast("اللينكات اتحفظت ✓");
+};
+
+boot();
+</script>
+<script src="niches.js"></script>
+<script src="admin-niches.js"></script>
+</body>
+</html>

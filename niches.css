@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&display=swap");
+.niche-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.niche-card{display:flex;flex-direction:column;align-items:flex-start;gap:16px;text-decoration:none;color:var(--text);background:rgba(14,16,32,.9);border:1px solid var(--line);border-radius:20px;padding:28px;transition:transform .2s,border-color .2s}.niche-card:hover,.niche-card:focus-visible{transform:translateY(-5px);border-color:var(--purple-bright)}.niche-number{color:var(--purple-bright);font-size:13px;letter-spacing:3px}.niche-card h3{font-size:25px;line-height:1.5}.niche-card p{color:var(--muted);line-height:1.9;margin:0}.niche-more{color:var(--purple-bright);margin-top:auto;font-size:14px}.niche-page{background:var(--bg);color:var(--text)}.niche-page .nav{position:relative}.niche-detail{max-width:1040px;margin:auto;padding:60px 24px 30px}.niche-detail h1{font-size:clamp(38px,7vw,72px);line-height:1.4;margin:20px 0}.niche-detail h2{font-size:28px;margin:48px 0 20px}.niche-lead{font-size:20px;color:var(--muted);line-height:1.9}.niche-empty{padding:24px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);line-height:1.9}.niche-example{padding:24px;margin:24px 0;border:1px solid var(--line);border-radius:20px;background:var(--panel)}.niche-example h3{font-size:24px;margin-bottom:12px}.niche-example p{color:var(--muted);line-height:1.8}.niche-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}.niche-pair h4{margin:16px 0;color:var(--purple-bright)}.niche-media{aspect-ratio:9/12;max-height:620px;background:var(--panel2);border-radius:12px;overflow:hidden;display:grid;place-items:center}.niche-media iframe,.niche-media video{height:100%;width:100%;border:0;object-fit:contain}.niche-cta{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 60px}.niche-example-form{margin-top:18px;padding:12px}#niches-admin .ops{flex-wrap:wrap}#niches-admin .work-row{flex-wrap:wrap}@media(max-width:700px){.niche-grid{grid-template-columns:1fr}.niche-card{padding:24px}.niche-detail{padding-top:28px}.niche-page .nav{padding:18px}.niche-page .nav nav{gap:12px}.niche-example{padding:16px}.niche-card h3{font-size:23px}}
+/* Extra glyph room for Arabic headings on mobile browsers. */
+.niche-detail h2{line-height:2.2;padding-block:0.15em 0.35em;overflow:visible}
+@media(max-width:640px){body:not(.niche-page) .nav{padding:12px 6vw;align-items:center;flex-wrap:wrap;gap:8px}body:not(.niche-page) .nav nav{width:100%;justify-content:space-between;gap:8px}body:not(.niche-page) .nav .nav-cta{white-space:nowrap}body:not(.niche-page) .nav-logo{font-size:20px}}
+.niche-detail h2{font-family:Arial,Tahoma,sans-serif;font-weight:700;line-height:1.8}
+
+.niche-card{border-color:rgba(139,61,255,.35);background:linear-gradient(145deg,rgba(139,61,255,.09),rgba(112,88,212,.035)),rgba(14,16,32,.9)}
+.niche-card:hover,.niche-card:focus-visible{box-shadow:0 12px 36px rgba(139,61,255,.15)}
+.niche-detail h1{color:var(--purple-bright)}.niche-detail h2{color:var(--cream)}
+
+/* Silent, local preview clips. No third-party player until opening a work. */
+.playlist-preview{width:calc(100% + 56px);margin:-28px -28px 2px;aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:20px 20px 0 0;background:#0b0913}.playlist-preview video{width:100%;height:100%;object-fit:cover;display:block;opacity:.8;transition:opacity .25s}.playlist-preview.is-playing video{opacity:1}.preview-badge,.preview-hint{position:absolute;font-size:11px;padding:5px 9px;border-radius:30px;background:#0a071dcc;color:#eee;backdrop-filter:blur(8px);pointer-events:none}.preview-badge{top:12px;right:12px}.preview-hint{bottom:12px;left:12px}.is-playing .preview-hint{background:#7a30cc}.niche-card{overflow:hidden}@media(max-width:700px){.playlist-preview{width:calc(100% + 48px);margin:-24px -24px 2px}}
+/* One status badge while a preview is playing. */
+.playlist-preview.is-playing .preview-badge{display:none}
+
+/* === Folder-style playlist cards (inspired by a reference portfolio's tabbed folder cards; shape drawn from scratch) === */
+:root{--folder-clip:polygon(0.0px 68.0px,0.7px 62.3px,2.9px 57.0px,6.4px 52.4px,11.0px 48.9px,16.3px 46.7px,22.0px 46.0px,26.0px 46.0px,34.7px 45.1px,43.3px 42.6px,52.0px 38.8px,60.7px 34.1px,69.3px 28.7px,78.0px 23.0px,86.7px 17.3px,95.3px 11.9px,104.0px 7.2px,112.7px 3.4px,121.3px 0.9px,130.0px 0.0px,calc(100% - 22.0px) 0.0px,calc(100% - 16.3px) 0.7px,calc(100% - 11.0px) 2.9px,calc(100% - 6.4px) 6.4px,calc(100% - 2.9px) 11.0px,calc(100% - 0.7px) 16.3px,calc(100% - 0.0px) 22.0px,calc(100% - 0.0px) calc(100% - 22.0px),calc(100% - 0.7px) calc(100% - 16.3px),calc(100% - 2.9px) calc(100% - 11.0px),calc(100% - 6.4px) calc(100% - 6.4px),calc(100% - 11.0px) calc(100% - 2.9px),calc(100% - 16.3px) calc(100% - 0.7px),calc(100% - 22.0px) calc(100% - 0.0px),22.0px calc(100% - 0.0px),16.3px calc(100% - 0.7px),11.0px calc(100% - 2.9px),6.4px calc(100% - 6.4px),2.9px calc(100% - 11.0px),0.7px calc(100% - 16.3px),0.0px calc(100% - 22.0px))}
+.niche-card{position:relative;isolation:isolate;border:0;border-radius:0;background:rgba(160,110,255,.5);clip-path:var(--folder-clip);padding:76px 28px 28px;overflow:visible;transition:transform .25s,background .25s,filter .25s}
+.niche-card::before{content:"";position:absolute;inset:1px;z-index:-1;clip-path:var(--folder-clip);background:linear-gradient(160deg,#171233 0%,#0c0a1e 70%)}
+.niche-card:hover,.niche-card:focus-visible{transform:translateY(-6px);background:#b48aff;box-shadow:none;filter:drop-shadow(0 14px 26px rgba(139,61,255,.28))}
+.niche-number{position:absolute;top:12px;inset-inline-start:22px;font-size:13px;letter-spacing:3px}
+.niche-card .playlist-preview{position:absolute;inset:0 0 auto 0;width:100%;margin:0;aspect-ratio:auto;height:44%;z-index:-1;border-radius:0}
+.niche-card h3,.niche-card p,.niche-more{position:relative}
+.niche-card{min-height:340px}
+.niche-card:has(.playlist-preview){padding-top:clamp(190px,48%,230px)}
+.niche-card:has(.playlist-preview)::after{content:"";position:absolute;inset:0;z-index:-1;clip-path:var(--folder-clip);background:linear-gradient(180deg,transparent 28%,#0c0a1ee6 52%)}
+/* Fonts: Readex Pro (free, SIL OFL) as the closest free look to the reference's wide, soft Arabic display style */
+body,button,input,textarea{font-family:"Readex Pro","Cairo",system-ui,sans-serif}
+h1,h2,h3,.hero-title,.nav-logo,.niche-card h3{font-family:"Readex Pro","Cairo",system-ui,sans-serif;font-weight:600;letter-spacing:0}
+html[lang=en] .hero-title,html[lang=en] .niche-detail h1,html[lang=en] .niche-detail h2,.niche-detail h2{font-family:"Readex Pro","Cairo",system-ui,sans-serif}
+@media(max-width:700px){.niche-card{padding-inline:22px}}
+.niche-card::before{inset:1.5px}
+.niche-card{background:rgba(176,130,255,.75)}
+.niche-card .preview-badge{display:none}
+.niche-card .preview-hint{top:auto;bottom:auto;left:16px;inset-inline:auto;top:calc(44% - 38px)}
+.niche-number{top:14px;color:#cdb2ff;font-weight:600}
+.niche-card:has(.playlist-preview) .niche-number{z-index:3}
+.niche-card{background:#9d6bff}.niche-card::before{inset:2px}.niche-card .preview-hint{display:none}
+/* Safari / older WebKit support */
+.niche-card{-webkit-clip-path:var(--folder-clip)}.niche-card::before,.niche-card::after{-webkit-clip-path:var(--folder-clip)}
+
+/* === VEX mini player: small bottom controls, tap video to hide/show === */
+.niche-media.has-vx{display:block;background:#000}
+.vxp{position:relative;width:100%;height:100%;background:#000;overflow:hidden;direction:ltr;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.vxp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.vxp-big{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(10,7,29,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:grid;place-items:center;padding:0;cursor:pointer;transition:opacity .2s}
+.vxp-big svg{width:24px;height:24px;fill:#fff;margin-left:3px}
+.vxp.is-started .vxp-big,.vxp:not(.is-paused) .vxp-big{opacity:0;pointer-events:none}
+.vxp.is-started.is-paused .vxp-big{opacity:1;pointer-events:auto}
+.vxp-bar{position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;align-items:center;gap:6px;padding:0 8px;background:linear-gradient(0deg,rgba(0,0,0,.72),rgba(0,0,0,0));opacity:0;pointer-events:none;transition:opacity .2s;color:#fff}
+.vxp.show-ui .vxp-bar,.vxp:not(.is-started) .vxp-bar{opacity:1;pointer-events:auto}
+.vxp-btn{background:none;border:0;padding:0;width:26px;height:26px;display:grid;place-items:center;cursor:pointer;flex:none}
+.vxp-btn svg{width:16px;height:16px;fill:#fff}
+.vxp-time{font:500 10.5px/1 "Readex Pro",Arial,sans-serif;color:#eee;min-width:28px;text-align:center;flex:none;font-variant-numeric:tabular-nums}
+.vxp-seek{flex:1;min-width:0;height:18px;margin:0;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.vxp-seek::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:rgba(255,255,255,.35)}
+.vxp-seek::-moz-range-track{height:3px;border-radius:2px;background:rgba(255,255,255,.35)}
+.vxp-seek::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:#b48aff;margin-top:-3.5px}
+.vxp-seek::-moz-range-thumb{width:10px;height:10px;border:0;border-radius:50%;background:#b48aff}
+@media(max-width:700px){.vxp-bar{height:30px;gap:4px;padding:0 6px}.vxp-time{min-width:26px}.vxp-big{width:48px;height:48px}}
