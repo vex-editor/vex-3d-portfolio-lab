@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VEX — تجربة بصرية | مونتاج ريلز</title>
-<meta name="description" content="VEX — مونتاج ريلز بإيقاع محسوب. مش مجرد فيديو، دي تجربة.">
+<title>VEX — تجربة بصرية | مونتاجك بإيقاع محسوب</title>
+<meta name="description" content="VEX — مونتاجك بإيقاع محسوب. مش مجرد فيديو، دي تجربة.">
 <link rel="canonical" href="https://vex-editor.github.io/vex-3d-portfolio/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_EG">
 <meta property="og:site_name" content="VEX">
-<meta property="og:title" content="VEX | مونتاج ريلز بإيقاع محسوب">
+<meta property="og:title" content="VEX | مونتاجك بإيقاع محسوب">
 <meta property="og:description" content="مش مجرد فيديو، دي تجربة. شوف أعمال VEX وتخصصات المونتاج وابدأ مشروعك.">
 <meta property="og:url" content="https://vex-editor.github.io/vex-3d-portfolio/">
 <meta property="og:image" content="https://aoabbtazodqpkkriitfj.supabase.co/storage/v1/object/public/covers/1795425088651-4mezma.jpg">
@@ -19,7 +19,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="VEX Video Editing, Hamza Sayed">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="VEX | مونتاج ريلز بإيقاع محسوب">
+<meta name="twitter:title" content="VEX | مونتاجك بإيقاع محسوب">
 <meta name="twitter:description" content="مش مجرد فيديو، دي تجربة. شوف الأعمال والتخصصات من VEX.">
 <meta name="twitter:image" content="https://aoabbtazodqpkkriitfj.supabase.co/storage/v1/object/public/covers/1795425088651-4mezma.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -204,8 +204,8 @@
 </nav>
 <main>
   <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-kicker"><span class="kicker-dot" aria-hidden="true"></span><span class="kicker-text">مونتاج ريلز</span></div>
-    <h1 id="hero-title"><span class="grad">مونتاج ريلز<br>بإيقاع محسوب</span></h1>
+    <div class="hero-kicker"><span class="kicker-dot" aria-hidden="true"></span><span class="kicker-text">مونتاجك</span></div>
+    <h1 id="hero-title"><span class="grad">مونتاجك<br>بإيقاع محسوب</span></h1>
     <p class="hero-sub">مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.</p>
     <div class="hero-actions">
       <a href="https://wa.me/201558077266?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B+VEX+%F0%9F%91%8B+%D8%B9%D8%A7%D9%8A%D8%B2+%D8%A3%D8%B7%D9%84%D8%A8+%D8%B1%D9%8A%D9%84+%D9%84%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9+%D8%A8%D8%B5%D8%B1%D9%8A%D8%A9+%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9" class="btn btn-primary btn-big" id="hero-cta" target="_blank" rel="noopener">ابدأ مشروعك</a>
@@ -350,11 +350,11 @@ function updateDynamicText() {
   const worksTitle = document.getElementById("works-title");
   const aboutTitle = document.getElementById("about-title");
   if (currentLang === "en") {
-    if (heroTitle) heroTitle.innerHTML = '<span class="grad">Reels Editing<br>With Calculated Rhythm</span>';
+    if (heroTitle) heroTitle.innerHTML = '<span class="grad">Your Editing<br>With Calculated Rhythm</span>';
     if (heroSub) heroSub.textContent = "Not just video — it's an experience. Every cut, every transition, every color — calculated to serve the message.";
     if (worksTitle) worksTitle.innerHTML = 'My <span class="dot">.</span>Work';
     if (aboutTitle) aboutTitle.innerHTML = 'About <span class="dot">VEX</span>';
-    document.querySelector(".hero-kicker .kicker-text").textContent = "Reels Editing";
+    document.querySelector(".hero-kicker .kicker-text").textContent = "Your Editing";
     document.querySelector(".scroll-hint").textContent = "Scroll to discover more ↓";
     document.getElementById("hero-cta").textContent = "Start Your Project";
     document.querySelector(".works-header .btn-ghost").textContent = "All Playlists →";
@@ -365,11 +365,11 @@ function updateDynamicText() {
     document.querySelectorAll(".about-card h3")[2].textContent = "Clean Delivery";
     document.querySelectorAll(".about-card p")[2].textContent = "Organized files, clear naming, assets ready for revision. Pick up the project tomorrow without hunting for a lost layer.";
   } else {
-    if (heroTitle) heroTitle.innerHTML = '<span class="grad">مونتاج ريلز<br>بإيقاع محسوب</span>';
+    if (heroTitle) heroTitle.innerHTML = '<span class="grad">مونتاجك<br>بإيقاع محسوب</span>';
     if (heroSub) heroSub.textContent = "مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.";
     if (worksTitle) worksTitle.innerHTML = 'أعمالي<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'عن <span class="dot">VEX</span>';
-    document.querySelector(".hero-kicker .kicker-text").textContent = "مونتاج ريلز";
+    document.querySelector(".hero-kicker .kicker-text").textContent = "مونتاجك";
     document.querySelector(".scroll-hint").textContent = "اسحب لاكتشاف المزيد ↓";
     document.getElementById("hero-cta").textContent = "ابدأ مشروعك";
     document.querySelector(".works-header .btn-ghost").textContent = "كل البلاي ليستات →";
@@ -949,7 +949,7 @@ function runIntro(onDone) {
 function initMarquee() {
   const track = document.getElementById("marquee-track");
   if (!track) return;
-  const items = ["مونتاج ريلز", "إيقاع محسوب", "جراديينج سينمائي", "انتقالات سلسة", "ساوند ديزاين", "تجربة بصرية"];
+  const items = ["مونتاجك", "إيقاع محسوب", "جراديينج سينمائي", "انتقالات سلسة", "ساوند ديزاين", "تجربة بصرية"];
   const seq = items.map(t => `<span>${t}</span><i aria-hidden="true">✦</i>`).join("");
   track.innerHTML = seq + seq;
 }

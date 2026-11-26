@@ -111,7 +111,7 @@ main, .nav, footer { position: relative; z-index: 2; }
 .hero h1 {
   font-size: clamp(2.4rem, 7.5vw, 5.2rem);
   font-weight: 900;
-  line-height: 1.25;
+  line-height: 1.45;
   text-shadow: 0 3px 26px rgba(36, 35, 30, 0.9), 0 0 10px rgba(36, 35, 30, 0.7);
 }
 .grad {
@@ -119,6 +119,10 @@ main, .nav, footer { position: relative; z-index: 2; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  /* room for AR descenders so background-clip:text doesn't cut them */
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+  display: inline-block;
 }
 .hero-sub {
   color: var(--muted);
