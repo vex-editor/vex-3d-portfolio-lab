@@ -620,11 +620,15 @@ function initScene() {
     clearcoat: 1, clearcoatRoughness: 0.12,
     emissive: 0x3d1a80, emissiveIntensity: 0.22, envMapIntensity: 1.6
   });
+  // heroGroup shrinks/shifts on mobile, so the prism lives at scene level with per-form-factor placement
+  const pConf = isMobile
+    ? { y: -0.55, z: -1.1, s: 1.15, shY: -1.85, shS: 0.62 }
+    : { y: -0.48, z: -1.24, s: 1.52, shY: -2.08, shS: 0.8 };
   const prism = new THREE.Mesh(prismGeo, prismMat);
-  prism.position.set(0, 0.9, 2.2);
+  prism.position.set(0, pConf.y, pConf.z);
   prism.rotation.y = -0.35;
-  prism.scale.setScalar(isMobile ? 1.55 : 1.9);
-  heroGroup.add(prism);
+  prism.scale.setScalar(pConf.s);
+  scene.add(prism);
 
   // soft fake contact shadow under the prism
   const shadowCanvas = document.createElement("canvas");
@@ -637,9 +641,9 @@ function initScene() {
   sctx.fillRect(0, 0, 128, 128);
   const shadowTex = new THREE.CanvasTexture(shadowCanvas);
   const prismShadow = new THREE.Sprite(new THREE.SpriteMaterial({ map: shadowTex, transparent: true, opacity: 0.8, depthWrite: false }));
-  prismShadow.scale.set(4.2, 1.9, 1);
-  prismShadow.position.set(0, -1.1, 2.2);
-  heroGroup.add(prismShadow);
+  prismShadow.scale.set(4.2 * pConf.shS, 1.9 * pConf.shS, 1);
+  prismShadow.position.set(0, pConf.shY, pConf.z);
+  scene.add(prismShadow);
 
   // glossy key light for the prism
   const prismKey = new THREE.DirectionalLight(0xfff1e0, 2.2);
@@ -710,20 +714,19 @@ function initScene() {
     // Hero prism: float, pointer steering, soft wobble
     if (prism) {
       const floatY = Math.sin(t * 1.15) * 0.28;
-      prism.position.y = 0.9 + floatY;
+      prism.position.y = pConf.y + floatY;
       const targetRotY = -0.18 + pointer.x * 0.4 + Math.sin(t * 0.35) * 0.26;
       const targetRotX = -pointer.y * 0.32;
       prism.rotation.y += (targetRotY - prism.rotation.y) * 0.06;
       prism.rotation.x += (targetRotX - prism.rotation.x) * 0.06;
       const wob = Math.sin(t * 2.1);
-      prism.scale.y = (isMobile ? 1.55 : 1.9) * (1 + wob * 0.045);
-      prism.scale.x = prism.scale.z = (isMobile ? 1.55 : 1.9) * (1 - wob * 0.03);
+      prism.scale.y = pConf.s * (1 + wob * 0.045);
+      prism.scale.x = prism.scale.z = pConf.s * (1 - wob * 0.03);
       // contact shadow tracks the float
       const lift = (floatY + 0.28) / 0.56; // 0..1
       prismShadow.material.opacity = 0.85 - lift * 0.35;
-      const shScale = 4.2 - lift * 0.9;
+      const shScale = (4.2 - lift * 0.9) * pConf.shS;
       prismShadow.scale.set(shScale, shScale * 0.45, 1);
-      window.__dbg = { mob: isMobile, rotY: +prism.rotation.y.toFixed(2), rotX: +prism.rotation.x.toFixed(2), s: +prism.scale.y.toFixed(2), py: +prism.position.y.toFixed(2), envOk: !!scene.environment, dpr: renderer.getPixelRatio(), w: innerWidth, t: +t.toFixed(1) };
     }
 
     // Rings: 4x speed during intro, easing to 1x
