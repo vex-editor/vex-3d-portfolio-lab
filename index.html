@@ -205,7 +205,7 @@
 <main>
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-kicker"><span class="kicker-dot" aria-hidden="true"></span><span class="kicker-text">مونتاجك</span></div>
-    <h1 id="hero-title"><span class="grad">مونتاجك<br>بإيقاع محسوب</span></h1>
+    <h1 id="hero-title"><span class="h-line"><span class="h-word grad">مونتاجك</span></span><span class="h-line"><span class="h-word grad">بإيقاع</span> <span class="h-word grad">محسوب</span></span></h1>
     <p class="hero-sub">مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.</p>
     <div class="hero-actions">
       <a href="https://wa.me/201558077266?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B+VEX+%F0%9F%91%8B+%D8%B9%D8%A7%D9%8A%D8%B2+%D8%A3%D8%B7%D9%84%D8%A8+%D8%B1%D9%8A%D9%84+%D9%84%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9+%D8%A8%D8%B5%D8%B1%D9%8A%D8%A9+%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9" class="btn btn-primary btn-big" id="hero-cta" target="_blank" rel="noopener">ابدأ مشروعك</a>
@@ -344,13 +344,104 @@ langToggle?.addEventListener("click", () => {
   updateDynamicText();
 });
 
+// ================= Interactive 3D Headline =================
+// Per-word spans for AR (splitting letters would break Arabic letter joining),
+// per-letter for EN. Gradient is painted line-wide via background offsets so it
+// matches the original pre-rebuild look exactly.
+function buildHeadline(lines, perLetter) {
+  const h1 = document.getElementById("hero-title");
+  if (!h1) return;
+  h1.innerHTML = "";
+  lines.forEach((line) => {
+    const lineEl = document.createElement("span");
+    lineEl.className = "h-line";
+    if (perLetter) {
+      for (const ch of line) {
+        if (ch === " ") { lineEl.appendChild(document.createTextNode(" ")); continue; }
+        const s = document.createElement("span");
+        s.className = "h-letter grad";
+        s.textContent = ch;
+        lineEl.appendChild(s);
+      }
+    } else {
+      line.split(" ").forEach((w, i) => {
+        if (i) lineEl.appendChild(document.createTextNode(" "));
+        const s = document.createElement("span");
+        s.className = "h-word grad";
+        s.textContent = w;
+        lineEl.appendChild(s);
+      });
+    }
+    h1.appendChild(lineEl);
+  });
+  paintHeadlineGradient(h1);
+  initHeadline3D(h1);
+}
+
+function paintHeadlineGradient(h1) {
+  h1 = h1 || document.getElementById("hero-title");
+  if (!h1) return;
+  h1.querySelectorAll(".h-line").forEach((line) => {
+    const w = line.offsetWidth;
+    if (!w) return;
+    line.querySelectorAll(".grad").forEach((u) => {
+      u.style.backgroundSize = w + "px 100%";
+      u.style.backgroundPosition = "-" + u.offsetLeft + "px 0";
+    });
+  });
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => paintHeadlineGradient());
+}
+let __hgResizeT;
+window.addEventListener("resize", () => {
+  clearTimeout(__hgResizeT);
+  __hgResizeT = setTimeout(() => paintHeadlineGradient(), 180);
+});
+
+function initHeadline3D(h1) {
+  if (!h1 || reducedMotion) return;
+  const units = h1.querySelectorAll(".h-word, .h-letter");
+  if (!units.length) return;
+  const hero = h1.closest(".hero") || h1.parentElement;
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+  function apply() {
+    raf = null;
+    cx += (tx - cx) * 0.14;
+    cy += (ty - cy) * 0.14;
+    const n = units.length;
+    units.forEach((u, i) => {
+      const phase = n > 1 ? i / (n - 1) - 0.5 : 0; // -0.5..0.5 across the headline
+      const z = 26 + Math.cos(phase * Math.PI) * 22 + cx * phase * 46;
+      u.style.transform =
+        "rotateY(" + (cx * 15).toFixed(2) + "deg) " +
+        "rotateX(" + (-cy * 11).toFixed(2) + "deg) " +
+        "translateZ(" + z.toFixed(1) + "px)";
+    });
+    if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) raf = requestAnimationFrame(apply);
+  }
+  function onMove(e) {
+    const r = h1.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2)));
+    ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height / 2)));
+    if (!raf) raf = requestAnimationFrame(apply);
+  }
+  hero.addEventListener("pointermove", onMove, { passive: true });
+  hero.addEventListener("pointerleave", () => {
+    tx = 0; ty = 0;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+  apply();
+}
+
 function updateDynamicText() {
   const heroTitle = document.getElementById("hero-title");
   const heroSub = document.querySelector(".hero-sub");
   const worksTitle = document.getElementById("works-title");
   const aboutTitle = document.getElementById("about-title");
   if (currentLang === "en") {
-    if (heroTitle) heroTitle.innerHTML = '<span class="grad">Your Editing<br>With Calculated Rhythm</span>';
+    if (heroTitle) buildHeadline(["Your Editing", "With Calculated Rhythm"], true);
     if (heroSub) heroSub.textContent = "Not just video — it's an experience. Every cut, every transition, every color — calculated to serve the message.";
     if (worksTitle) worksTitle.innerHTML = 'My <span class="dot">.</span>Work';
     if (aboutTitle) aboutTitle.innerHTML = 'About <span class="dot">VEX</span>';
@@ -365,7 +456,7 @@ function updateDynamicText() {
     document.querySelectorAll(".about-card h3")[2].textContent = "Clean Delivery";
     document.querySelectorAll(".about-card p")[2].textContent = "Organized files, clear naming, assets ready for revision. Pick up the project tomorrow without hunting for a lost layer.";
   } else {
-    if (heroTitle) heroTitle.innerHTML = '<span class="grad">مونتاجك<br>بإيقاع محسوب</span>';
+    if (heroTitle) buildHeadline(["مونتاجك", "بإيقاع محسوب"], false);
     if (heroSub) heroSub.textContent = "مش مجرد فيديو، دي تجربة. كل قطّة، كل انتقال، كل لون — محسوب يخدم الرسالة.";
     if (worksTitle) worksTitle.innerHTML = 'أعمالي<span class="dot">.</span>';
     if (aboutTitle) aboutTitle.innerHTML = 'عن <span class="dot">VEX</span>';
@@ -1058,6 +1149,7 @@ function initCoverflowFX() {
 
 // ================= Boot =================
 document.addEventListener("DOMContentLoaded", () => {
+  buildHeadline(currentLang === "en" ? ["Your Editing", "With Calculated Rhythm"] : ["مونتاجك", "بإيقاع محسوب"], currentLang === "en");
   runIntro(() => initHeroEntrance());
   initScrollUI();
   initMarquee();

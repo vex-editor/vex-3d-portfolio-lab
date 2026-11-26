@@ -109,13 +109,16 @@ main, .nav, footer { position: relative; z-index: 2; }
   margin-bottom: 18px;
 }
 .hero h1 {
-  font-size: clamp(2.4rem, 7.5vw, 5.2rem);
+  font-size: clamp(2.4rem, 8vw, 5.5rem);
   font-weight: 900;
   line-height: 1.45;
-  text-shadow: 0 3px 26px rgba(36, 35, 30, 0.9), 0 0 10px rgba(36, 35, 30, 0.7);
+  text-shadow: 0 4px 32px rgba(6, 7, 15, 0.9), 0 0 16px rgba(6, 7, 15, 0.7);
+  perspective: 900px;
+  transform-style: preserve-3d;
 }
 .grad {
-  background: linear-gradient(120deg, var(--purple-bright), var(--pink));
+  /* original pre-rebuild sweep: white to VEX purple */
+  background: linear-gradient(115deg, #ffffff 10%, #e6dcff 40%, #b99aff 75%, #8b3dff);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -403,4 +406,13 @@ footer {
 .nav .nav-cta{border-color:rgba(50,203,201,.45);color:var(--purple-bright)}
 .btn-primary{background:linear-gradient(120deg,var(--purple-deep),var(--purple))}
 :focus-visible{outline:2px solid var(--purple-bright);outline-offset:4px}
-.hero h1 .grad{text-shadow:none;filter:drop-shadow(0 3px 12px rgba(7,7,13,.8))}
+/* Interactive 3D headline units */
+.hero h1 .h-line{display:block;transform-style:preserve-3d}
+.hero h1 .h-word,.hero h1 .h-letter{
+  transform-style:preserve-3d;
+  /* stacked shadow = extrusion depth under the gradient face */
+  text-shadow:0 1px 0 #3d1e7a,0 2px 0 #361a6c,0 3px 0 #2e165d,0 4px 0 #271350,0 5px 0 #201043,0 10px 24px rgba(4,5,12,.8);
+  transition:transform .12s linear;
+  will-change:transform;
+}
+.hero h1 .grad{} /* gradient + descender padding come from .grad */
