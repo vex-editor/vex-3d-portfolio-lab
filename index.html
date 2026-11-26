@@ -401,10 +401,10 @@ function initScene() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x05060d, 0.04);
+  scene.fog = new THREE.FogExp2(0x05060d, 0.028);
 
   const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
-  camera.position.set(0, 0, 46); // start deep for intro dive
+  camera.position.set(0, 0, 38); // start deep for intro dive
 
   scene.add(new THREE.AmbientLight(0x8b3dff, 0.3));
   const key = new THREE.PointLight(0x7058d4, 60, 60);
@@ -464,8 +464,8 @@ function initScene() {
       });
       geo.center();
       vexText = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color: 0x2b2924, metalness: 0.9, roughness: 0.18,
-        emissive: 0x8b3dff, emissiveIntensity: 0.3
+        color: 0x35304a, metalness: 0.9, roughness: 0.18,
+        emissive: 0x8b3dff, emissiveIntensity: 0.5
       }));
       vexText.position.set(0, 0, 0);
       heroGroup.add(vexText);
@@ -590,7 +590,7 @@ function initScene() {
     const scrollYaw = scrollY * 0.0006;
 
     // Camera: intro dive from z=46 to z=9 with easeOutCubic, then scroll-driven + pointer parallax
-    const targetZ = 46 - introPEase * 37; // 46 at introP=0, 9 at introP=1
+    const targetZ = 38 - introPEase * 29; // 38 at introP=0, 9 at introP=1
     const camTargetZ = introP < 1 ? targetZ : scrollZ;
     const camTargetY = introP < 1 ? 0 : scrollYPos;
     camera.position.x += (pointer.x * 0.9 - camera.position.x) * 0.03;
@@ -623,7 +623,7 @@ function initScene() {
 
     // VEX text: emissive pulse + pointer parallax + drag + scroll yaw
     if (vexText) {
-      const pulse = 0.3 + Math.sin(t * 2) * 0.12; // 0.3±0.12
+      const pulse = 0.5 + Math.sin(t * 2) * 0.15; // 0.5±0.15
       vexText.material.emissiveIntensity = pulse;
       vexText.rotation.y = Math.sin(t * 0.3) * 0.15 + rotY * 0.3 + scrollYaw;
       vexText.rotation.x = rotX * 0.3;
