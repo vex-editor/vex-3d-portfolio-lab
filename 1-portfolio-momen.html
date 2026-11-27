@@ -163,7 +163,7 @@ footer{background:var(--ink);color:#8a80c4;padding:30px clamp(16px,3.4vw,52px) 4
     <div class="pills rv"><div class="pill"><i>▶</i>Reels 9:16</div><div class="pill"><i>Aa</i>Captions &amp; motion · كابشن وموشن</div><div class="pill"><i>◐</i>Colour grading · جراديينج</div></div>
   </div>
   <div class="phonew rv"><div class="blob"></div><div class="float f1"><i></i>Need a reel?</div><div class="float f2"><i></i>اطلب ريلك</div>
-    <div class="phone" id="phone"><video controls playsinline preload="metadata" poster="https://vex-editor.github.io/vex-3d-portfolio-lab/1-hamza-reel-poster.jpg" src="https://vex-editor.github.io/vex-3d-portfolio-lab/1-hamza-reel.mp4"></video></div></div>
+    <div class="phone" id="phone"><video controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture disableRemotePlayback oncontextmenu="return false" playsinline preload="metadata" poster="https://vex-editor.github.io/vex-3d-portfolio-lab/1-hamza-reel-poster.jpg" src="https://vex-editor.github.io/vex-3d-portfolio-lab/1-hamza-reel.mp4"></video></div></div>
 </div></section>
 
 <section class="sec work" id="work"><div class="head wrap"><h2 class="d rv">Work</h2><p class="sub rv">One playlist per niche. Open the one closest to your business.<br><span class="ar" style="display:block;margin-top:6px">كل مجال له بلاي ليست. افتح اللي شبه شغلك.</span></p></div>
@@ -339,7 +339,7 @@ function renderPL(){
  $$('#pl .card').forEach(c=>c.onclick=()=>openPL(+c.dataset.i));
 }
 function openPL(i){const p=PL[i];$('#mt').textContent=p.ar+' · '+p.en;
- $('#mbody').innerHTML=p.videos.length?`<div class="row2">${p.videos.map(v=>`<div class="vi"><video controls playsinline preload="metadata" poster="${v.poster}" src="${v.src}"></video><p>${v.ar}</p></div>`).join('')}</div>`:`<div class="empty">أعمال القسم ده قيد التجهيز وهتتضاف قريب.</div>`;
+ $('#mbody').innerHTML=p.videos.length?`<div class="row2">${p.videos.map(v=>`<div class="vi"><video controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture disableRemotePlayback oncontextmenu="return false" playsinline preload="metadata" poster="${v.poster}" src="${v.src}"></video><p>${v.ar}</p></div>`).join('')}</div>`:`<div class="empty">أعمال القسم ده قيد التجهيز وهتتضاف قريب.</div>`;
  $('#modal').classList.add('open');document.body.style.overflow='hidden'}
 function closeM(){$$('#mbody video').forEach(v=>v.pause());$('#modal').classList.remove('open');document.body.style.overflow=''}
 $('#mx').onclick=closeM;$('#modal').onclick=e=>{if(e.target.id==='modal')closeM()};addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
