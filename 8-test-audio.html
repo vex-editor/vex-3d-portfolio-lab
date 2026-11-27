@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اختبار الصوت</title>
+<style>
+  body{background:#06070F;color:#fff;font-family:sans-serif;margin:0;padding:20px;direction:rtl}
+  h1{font-size:20px}
+  .big{display:block;width:100%;padding:26px;font-size:22px;border:0;border-radius:14px;background:#7C5CFF;color:#fff;margin:14px 0}
+  video{width:100%;border-radius:10px;background:#000}
+  #log{background:#10121f;border-radius:10px;padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;direction:ltr;text-align:left;font-family:monospace}
+  .note{font-size:14px;color:#aab;margin:10px 0}
+</style>
+</head>
+<body>
+<h1>اختبار الصوت (تجربة)</h1>
+<p class="note">١) دوس الزرار ده. لو سمعت "بيب" يبقى الصوت شغال على الموقع.</p>
+<button id="beepBtn" class="big">🔊 دوس هنا — هتسمع بيب</button>
+<p class="note">٢) شغّل الفيديو من علامة التشغيل اللي فيه، ولو الصوت مقفول افتحه من أيقونة السماعة اللي على الفيديو نفسه. المفروض تسمع صوت الفيديو.</p>
+<video id="v" src="5-intro-sceneA.mp4" controls playsinline preload="auto"></video>
+<p class="note">٣) لو اللي فوق مش شغال، جرب الفيديو التاني ده (نفس الصوت بترميز مختلف):</p>
+<video id="v2" src="7-intro-sceneA-baseline.mp4" controls playsinline preload="none"></video>
+<h3 style="font-size:15px">تشخيص (ابعتله سكرين شوت من الجزء ده لو في مشكلة)</h3>
+<div id="log">...</div>
+<script>
+var logEl = document.getElementById('log');
+var lines = [];
+function log(s){ lines.push(s); logEl.textContent = lines.join('\n'); }
+log('UA: ' + navigator.userAgent);
+var v = document.getElementById('v');
+log('canPlay mp4/avc1: ' + v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
+log('canPlay mp4 generic: ' + v.canPlayType('video/mp4'));
+v.addEventListener('play', function(){ log('video: playing, muted=' + v.muted + ' volume=' + v.volume); });
+v.addEventListener('error', function(){ log('video ERROR code=' + (v.error && v.error.code)); });
+v.addEventListener('volumechange', function(){ log('video: muted=' + v.muted + ' volume=' + v.volume); });
+var v2 = document.getElementById('v2');
+v2.addEventListener('error', function(){ log('video2 ERROR code=' + (v2.error && v2.error.code)); });
+document.getElementById('beepBtn').addEventListener('click', function(){
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    var ctx = new Ctx();
+    log('AudioContext state: ' + ctx.state);
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    g.gain.value = 0.4;
+    o.frequency.value = 880;
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + 0.7);
+    log('beep: played (did you hear it?)');
+    if (ctx.state === 'suspended') { ctx.resume().then(function(){ log('ctx resumed: ' + ctx.state); }); }
+  } catch(e) { log('beep ERROR: ' + e.message); }
+});
+</script>
+</body>
+</html>
